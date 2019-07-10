@@ -1,0 +1,26 @@
+{
+  "name": "tiny-tfidf",
+  "version": "0.1.0",
+  "description": "Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity) ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kerryrodden/tiny-tfidf.git"
+  },
+  "keywords": [
+    "TFIDF",
+    "TF-IDF",
+    "cosine similarity",
+    "vector model"
+  ],
+  "author": "kerryrodden",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kerryrodden/tiny-tfidf/issues"
+  },
+  "homepage": "https://github.com/kerryrodden/tiny-tfidf#readme"
+}
