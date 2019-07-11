@@ -56,11 +56,8 @@ export default class Corpus {
   // TODO: potentially cut total number of terms off at a number
   getImportantTerms(numTermsPerDocument = 30) {
     const topTerms = [...this.documents.values()].map(d => d.getTopTerms(numTermsPerDocument)).flat().sort((a, b) => b[1] - a[1]);
-    console.log(topTerms);
     const uniqueTopTerms = [...new Set(topTerms.map(t => t[0]))];
-    console.log(uniqueTopTerms);
     const importantTerms = uniqueTopTerms.filter(t => this.uniqueDocuments.get(t).size > 1);
-    console.log(importantTerms);
     return importantTerms;
   }
 
