@@ -14,7 +14,12 @@ const stopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you'
   'won', 'wouldn'];
 
 export default class Stopwords {
-  static includes(word) {
-    return stopwords.includes(word);
+
+  constructor(customStopwords = []) {
+    this.stopwords = new Map(stopwords.concat(customStopwords).map(d => [d, true]));
+  }
+
+  includes(word) {
+    this.stopwords.has(word);
   }
 }

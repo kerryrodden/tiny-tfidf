@@ -3,13 +3,11 @@ import Document from './Document.js';
 
 function cosineSimilarity(vector1, vector2) {
   let dotProduct = 0.0;
+  let ss1 = 0.0;
+  let ss2 = 0.0;
   const length = Math.min(vector1.length, vector2.length);
   for (let i = 0; i < length; i++) {
     dotProduct += vector1[i] * vector2[i];
-  }
-  let ss1 = 0.0;
-  let ss2 = 0.0;
-  for (let i = 0; i < length; i++) {
     ss1 += vector1[i] * vector1[i];
     ss2 += vector2[i] * vector2[i];
   }

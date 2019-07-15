@@ -11,7 +11,8 @@ export default class Corpus {
   // - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and 0 means they are multitopic)
 
   constructor(names, texts, customStopwords = [], K1 = 1.5, b = 0.75) {
-    this.stopwordFilter = term => !Stopwords.includes(term) && !customStopwords.includes(term);
+    this.stopwords = new Stopwords(customStopwords);
+    this.stopwordFilter = term => !this.stopwords.includes(term);
     this.K1 = K1;
     this.b = b;
     this.documents = new Map();
