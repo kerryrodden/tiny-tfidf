@@ -20,6 +20,6 @@ export default class Stopwords {
   }
 
   includes(word) {
-    this.stopwords.has(word);
+    return this.stopwords.has(word);
   }
 }
