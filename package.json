@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-modules --es-module-specifier-resolution=node test.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/kerryrodden/tiny-tfidf/issues"
   },
-  "homepage": "https://github.com/kerryrodden/tiny-tfidf#readme"
+  "homepage": "https://github.com/kerryrodden/tiny-tfidf#readme",
+  "devDependencies": {
+    "tape": "^4.11.0"
+  }
 }
