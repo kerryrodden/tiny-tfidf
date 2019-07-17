@@ -9,6 +9,8 @@ A basic set of English stopwords is included, and you can specify your own list 
 - phrases (bigrams, trigrams, etc), e.g. "proof of concept"
 - stemming or lemmatizing, e.g. reducing "concept" and "concepts" to the same root
 
+I am open to adding either if there's a tiny way to do it!
+
 This is an ES6 module and is intended for use in the browser, rather than with Node.js ([more background](https://github.com/nodejs/modules/blob/master/doc/announcement.md#es-module-code-in-packages))
 
 ## Usage
