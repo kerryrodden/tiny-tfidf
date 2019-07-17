@@ -11,8 +11,6 @@ A basic set of English stopwords is included, and you can specify your own list 
 
 I am open to adding either if there's a tiny way to do it!
 
-This is an ES6 module and is intended for use in the browser, rather than with Node.js ([more background](https://github.com/nodejs/modules/blob/master/doc/announcement.md#es-module-code-in-packages))
-
 ## Usage
 
 Note: I'm still actively developing this code (and documentation), and the API is likely to change/evolve up until version 1.0.
@@ -44,6 +42,8 @@ console.log(doc.getTopTerms(50));
 ```
 
 ### With Node.js
+
+Disclaimer: this is an ES6 module and is mostly intended for use in the browser, rather than with Node.js ([more background on ES6 modules and Node](https://github.com/nodejs/modules/blob/master/doc/announcement.md#es-module-code-in-packages)).
 
 Example with Node v12.6.0 :
 
