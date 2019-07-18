@@ -16,26 +16,27 @@ export default class Corpus {
     this.K1 = K1;
     this.b = b;
     this.documents = new Map();
-    this.collectionFreq = new Map();
-    this.termWeights = new Map();
-    this.uniqueDocuments = new Map();
     for (let i = 0; i < texts.length; i++) {
       this.documents.set(names[i], new Document(texts[i]));
     }
-    this.calculateTermFrequencies();
-    this.calculateTermWeights();
-    this.calculateVectors();
+    this.collectionFrequencies = null;
+    this.collectionFrequencyWeights = null;
+    this.uniqueDocuments = null;
+    this.documentVectors = null;
+    this.totalLength = 0;
   }
 
-  calculateTermFrequencies() {
+  calculateCollectionFrequencies() {
+    this.collectionFrequencies = new Map();
+    this.uniqueDocuments = new Map();
     for (const [identifier, document] of this.documents.entries()) {
       document.getUniqueTerms().filter(this.stopwordFilter).forEach((term) => {
         const frequency = document.getFrequency(term);
-        if (this.collectionFreq.has(term)) {
-          const n = this.collectionFreq.get(term);
-          this.collectionFreq.set(term, n + frequency);
+        if (this.collectionFrequencies.has(term)) {
+          const n = this.collectionFrequencies.get(term);
+          this.collectionFrequencies.set(term, n + frequency);
         } else {
-          this.collectionFreq.set(term, frequency);
+          this.collectionFrequencies.set(term, frequency);
         }
         // Keep track of how many unique documents each term appears in
         if (this.uniqueDocuments.has(term)) {
@@ -46,25 +47,37 @@ export default class Corpus {
         }
       });
     };
-    // Total length of the collection, calculated here as the sum of all term frequencies (minus stopwords)
-    this.totalLength = [...this.collectionFreq.values()].reduce((a,b) => a + b, 0);
+  }
+
+  getCollectionFrequencies() {
+    if (!this.collectionFrequencies) {
+      this.calculateCollectionFrequencies();
+    }
+    return this.collectionFrequencies;
   }
 
   getDocument(identifier) {
     return this.documents.get(identifier);
   }
 
+  getUniqueDocuments() {
+    if (!this.uniqueDocuments) {
+      this.calculateCollectionFrequencies();
+    }
+    return this.uniqueDocuments;
+  }
+
   // TODO: potentially cut total number of terms off at a number
   getImportantTerms(numTermsPerDocument = 30) {
-    const topTerms = [...this.documents.values()].map(d => d.getTopTerms(numTermsPerDocument)).flat().sort((a, b) => b[1] - a[1]);
+    const topTerms = this.getDocumentIdentifiers().map(d => this.getTopTermsForDocument(d, numTermsPerDocument)).flat().sort((a, b) => b[1] - a[1]);
     const uniqueTopTerms = [...new Set(topTerms.map(t => t[0]))];
-    const importantTerms = uniqueTopTerms.filter(t => this.uniqueDocuments.get(t).size > 1);
+    const importantTerms = uniqueTopTerms.filter(t => this.getUniqueDocuments().get(t).size > 1);
     return importantTerms;
   }
 
   getTermAsVector(t) {
     const vector = new Map();
-    for (const [term, idf] of this.termWeights.entries()) {
+    for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
       const weight = (t === term) ? idf : 0.0;
       vector.set(term, weight);
     }
@@ -75,20 +88,36 @@ export default class Corpus {
     return [...this.documents.keys()];
   }
 
-  calculateTermWeights() {
-    const N = this.totalLength;
-    for (const [term, n] of this.collectionFreq.entries()) {
-      this.termWeights.set(term, Math.log((N - n) / n));
+  getCommonTerms(identifier1, identifier2, maxTerms = 10) {
+    const vector1 = this.getDocumentVector(identifier1);
+    const vector2 = this.getDocumentVector(identifier2);
+    const commonTerms = [...vector1.entries()].map(([term, cw]) => [term, cw * vector2.get(term)]).filter(d => d[1] > 0);
+    return commonTerms.sort((a, b) => b[1] - a[1]).map(d => d[0]).slice(0, maxTerms);
+  }
+
+  calculateCollectionFrequencyWeights() {
+    this.collectionFrequencyWeights = new Map();
+    const N = this.getTotalLength();
+    for (const [term, n] of this.getCollectionFrequencies().entries()) {
+      this.collectionFrequencyWeights.set(term, Math.log((N - n) / n));
     }
   }
 
-  calculateVectors() {
+  getCollectionFrequencyWeights() {
+    if (!this.collectionFrequencyWeights) {
+      this.calculateCollectionFrequencyWeights();
+    }
+    return this.collectionFrequencyWeights;
+  }
+
+  calculateDocumentVectors() {
+    this.documentVectors = new Map();
     const K1 = this.K1;
     const b = this.b;
-    const avgLength = this.totalLength / this.documents.size;
+    const avgLength = this.getTotalLength() / this.documents.size;
     for (const [identifier, document] of this.documents) {
       const vector = new Map();
-      for (const [term, idf] of this.termWeights.entries()) {
+      for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
         let cw = 0.0;
         const tf = document.getFrequency(term);
         if (tf) {
@@ -97,7 +126,40 @@ export default class Corpus {
         }
         vector.set(term, cw);
       }
-      document.setVector(vector);
+      this.documentVectors.set(identifier, vector);
     }
+  }
+
+  getDocumentVectors() {
+    if (!this.documentVectors) {
+      this.calculateDocumentVectors();
+    }
+    return this.documentVectors;
+  }
+
+  getDocumentVector(identifier) {
+    if (!this.documentVectors) {
+      this.calculateDocumentVectors();
+    }
+    return this.documentVectors.get(identifier);
+  }
+
+  getTopTermsForDocument(identifier, numTerms = 30) {
+    const vector = this.getDocumentVector(identifier);
+    if (!vector) return [];
+    const sortedTerms = [...vector.entries()].filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
+    return sortedTerms.slice(0, numTerms);
+  }
+
+  calculateTotalLength() {
+    // Total length of the collection, calculated here as the sum of all term frequencies (minus stopwords)
+    this.totalLength = [...this.getCollectionFrequencies().values()].reduce((a,b) => a + b, 0);
+  }
+
+  getTotalLength() {
+    if (!this.totalLength) {
+      this.calculateTotalLength();
+    }
+    return this.totalLength;
   }
 }

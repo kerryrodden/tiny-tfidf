@@ -17,7 +17,7 @@ tape('Unit tests for Corpus class', function (t) {
   const terms = doc.getUniqueTerms();
   // We have ignored short terms and stripped numbers, but stopword filtering has not been applied yet
   t.deepEqual(terms, ["text", "for", "second", "document"]);
-  const topTerms = doc.getTopTerms();
+  const topTerms = corpus.getTopTermsForDocument("doc-2");
   // Stopword filtering has been applied so "for" is now gone
   t.equal(topTerms.length, 3);
   // "second" should have the highest weight

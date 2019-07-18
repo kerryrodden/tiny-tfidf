@@ -1,7 +1,6 @@
 export default class Document {
   constructor(text) {
     this.text = text;
-    this.termFreq = new Map();
     this.words = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g).filter(word => {
       // Exclude very short terms and terms that start with a number
       // Stopwords are dealt with later, when we calculate vectors and weights
@@ -11,14 +10,26 @@ export default class Document {
         return true;
       }
     }).map(word => word.toLowerCase());
+    this.termFrequencies = null;
+  }
+
+  calculateTermFrequencies() {
+    this.termFrequencies = new Map();
     this.words.forEach(word => {
-      if (this.termFreq.has(word)) {
-        this.termFreq.set(word, this.termFreq.get(word) + 1);
+      if (this.termFrequencies.has(word)) {
+        this.termFrequencies.set(word, this.termFrequencies.get(word) + 1);
       }
       else {
-        this.termFreq.set(word, 1);
+        this.termFrequencies.set(word, 1);
       }
     });
+  }
+
+  getTermFrequencies() {
+    if (!this.termFrequencies) {
+      this.calculateTermFrequencies();
+    }
+    return this.termFrequencies;
   }
 
   getText() {
@@ -30,23 +41,25 @@ export default class Document {
   }
 
   getUniqueTerms() {
-    return [...this.termFreq.keys()];
+    return [...this.getTermFrequencies().keys()];
   }
 
   getFrequency(term) {
-    return this.termFreq.get(term);
+    return this.getTermFrequencies().get(term);
   }
 
   setVector(vector) {
-    this.vector = vector;
+    console.warn("tiny-tfidf: Document.setVector() is deprecated and its functionality moved to Corpus.");
   }
 
   getVector() {
-    return this.vector;
+    console.warn("tiny-tfidf: Document.getVector() is deprecated; use Corpus.getDocumentVector() instead.");
+    return new Map();
   }
 
   getTopTerms(numTerms = 30) {
-    const sortedTerms = [...this.vector.entries()].filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
+    console.warn("tiny-tfidf: Document.getTopTerms() is deprecated; use Corpus.getTopTermsForDocument() instead.");
+    const sortedTerms = [...this.getVector().entries()].filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
     return sortedTerms.slice(0, numTerms);
   }
 }

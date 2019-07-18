@@ -25,7 +25,7 @@ export default class Similarity {
     const termVector = this.corpus.getTermAsVector(term.toLowerCase());
     const termVectorArray = [...termVector.values()];
     const documentIdentifiers = this.corpus.getDocumentIdentifiers();
-    const documentVectors = documentIdentifiers.map(d => this.corpus.getDocument(d).getVector());
+    const documentVectors = documentIdentifiers.map(d => this.corpus.getDocumentVector(d));
     const similarities = documentVectors.map(d => {
       const dArray = [...d.values()];
       return cosineSimilarity(termVectorArray, dArray);
@@ -42,7 +42,7 @@ export default class Similarity {
 
     // Now get the term vector for each document, and combine with the important terms to make one array
     const documentIdentifiers = this.corpus.getDocumentIdentifiers();
-    const documentVectors = documentIdentifiers.map(d => this.corpus.getDocument(d).getVector());
+    const documentVectors = documentIdentifiers.map(d => this.corpus.getDocumentVector(d));
 
     const identifiers = includeTerms ? [...importantTerms, ...documentIdentifiers] : [...documentIdentifiers];
     const vectors = includeTerms ? [...importantTermVectors, ...documentVectors] : [...documentVectors];
