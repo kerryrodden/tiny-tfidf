@@ -27,11 +27,8 @@ const corpus = new Corpus(
   ]
 );
 
-// get a document
-const doc = corpus.getDocument("doc-2");
-
-// print 50 top terms for this document
-console.log(doc.getTopTerms(50));
+// print 50 top terms for document 2
+console.log(corpus.getTopTermsForDocument("doc-2"));
 
 // prints
 [
