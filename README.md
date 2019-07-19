@@ -19,23 +19,27 @@ Note: I'm still actively developing this code (and documentation), and the API i
 import { Corpus } from "tiny-tfidf";
 
 const corpus = new Corpus(
-  ["doc-1", "doc-2", "doc-3"],
+  ["document1", "document2", "document3"],
   [
-    "text1 for first document document 1-1 text1 for document 1-2",
-    "text2 for second document aa document 2-2 text2 for document 2-2 text2 for document 2-3",
-    "text3 for third document bb ccccc document 3-1"
+    "This is test document number 1. It is quite a short document.",
+    "This is test document 2. It is also quite short, and is a test.",
+    "Test document number three is a bit different and is also a tiny bit longer."
   ]
 );
 
-// print 50 top terms for document 2
-console.log(corpus.getTopTermsForDocument("doc-2"));
+// print top terms for document 3
+console.log(corpus.getTopTermsForDocument("document3"));
 
-// prints
+// result
 [
-  ["second", 2.5843323952953945],
-  ["text", 1.2091035289247862],
-  ["document", 0.18177977729840644]
-];
+  [ 'bit', 1.4052017645754888 ],
+  [ 'three', 0.9441199355741565 ],
+  [ 'different', 0.9441199355741565 ],
+  [ 'tiny', 0.9441199355741565 ],
+  [ 'longer', 0.9441199355741565 ],
+  [ 'number', 0.34844657728045364 ],
+  [ 'also', 0.34844657728045364 ]
+]
 ```
 
 ### With Node.js
