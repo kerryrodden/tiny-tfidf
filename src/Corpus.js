@@ -1,5 +1,6 @@
 import Document from './Document.js';
 import Stopwords from './Stopwords.js';
+import Similarity from './Similarity.js';
 
 // Implements TF-IDF (Term Frequency - Inverse Document Frequency) using BM25 weighting, as described in:
 // https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-356.pdf
@@ -21,29 +22,21 @@ export default class Corpus {
     }
     this.collectionFrequencies = null;
     this.collectionFrequencyWeights = null;
-    this.uniqueDocuments = null;
     this.documentVectors = null;
     this.totalLength = 0;
+    this.similarity = null;
   }
 
+  // Collection frequency = how many unique documents each term appears in
   calculateCollectionFrequencies() {
     this.collectionFrequencies = new Map();
-    this.uniqueDocuments = new Map();
-    for (const [identifier, document] of this.documents.entries()) {
+    for (const document of this.documents.values()) {
       document.getUniqueTerms().filter(this.stopwordFilter).forEach((term) => {
-        const frequency = document.getFrequency(term);
         if (this.collectionFrequencies.has(term)) {
           const n = this.collectionFrequencies.get(term);
-          this.collectionFrequencies.set(term, n + frequency);
+          this.collectionFrequencies.set(term, n + 1);
         } else {
-          this.collectionFrequencies.set(term, frequency);
-        }
-        // Keep track of how many unique documents each term appears in
-        if (this.uniqueDocuments.has(term)) {
-          const s = this.uniqueDocuments.get(term);
-          this.uniqueDocuments.set(term, s.add(identifier));
-        } else {
-          this.uniqueDocuments.set(term, new Set([identifier]));
+          this.collectionFrequencies.set(term, 1);
         }
       });
     };
@@ -60,18 +53,11 @@ export default class Corpus {
     return this.documents.get(identifier);
   }
 
-  getUniqueDocuments() {
-    if (!this.uniqueDocuments) {
-      this.calculateCollectionFrequencies();
-    }
-    return this.uniqueDocuments;
-  }
-
   // TODO: potentially cut total number of terms off at a number
   getImportantTerms(numTermsPerDocument = 30) {
     const topTerms = this.getDocumentIdentifiers().map(d => this.getTopTermsForDocument(d, numTermsPerDocument)).flat().sort((a, b) => b[1] - a[1]);
     const uniqueTopTerms = [...new Set(topTerms.map(t => t[0]))];
-    const importantTerms = uniqueTopTerms.filter(t => this.getUniqueDocuments().get(t).size > 1);
+    const importantTerms = uniqueTopTerms.filter(t => this.getCollectionFrequencies().get(t) > 1);
     return importantTerms;
   }
 
@@ -92,14 +78,14 @@ export default class Corpus {
     const vector1 = this.getDocumentVector(identifier1);
     const vector2 = this.getDocumentVector(identifier2);
     const commonTerms = [...vector1.entries()].map(([term, cw]) => [term, cw * vector2.get(term)]).filter(d => d[1] > 0);
-    return commonTerms.sort((a, b) => b[1] - a[1]).map(d => d[0]).slice(0, maxTerms);
+    return commonTerms.sort((a, b) => b[1] - a[1]).slice(0, maxTerms);
   }
 
   calculateCollectionFrequencyWeights() {
     this.collectionFrequencyWeights = new Map();
-    const N = this.getTotalLength();
+    const N = this.documents.size;
     for (const [term, n] of this.getCollectionFrequencies().entries()) {
-      this.collectionFrequencyWeights.set(term, Math.log((N - n) / n));
+      this.collectionFrequencyWeights.set(term, Math.log(N) - Math.log(n));
     }
   }
 
@@ -161,5 +147,24 @@ export default class Corpus {
       this.calculateTotalLength();
     }
     return this.totalLength;
+  }
+
+  getSimilarityMatrix() {
+    if (!this.similarity) {
+      this.similarity = new Similarity(this);
+    }
+    return this.similarity.getSimilarityMatrix();
+  }
+
+  findSimilarDocumentsForQuery(term) {
+    const termVector = this.getTermAsVector(term.toLowerCase());
+    const termVectorArray = [...termVector.values()];
+    const documentIdentifiers = this.getDocumentIdentifiers();
+    const documentVectors = documentIdentifiers.map(d => this.getDocumentVector(d));
+    const similarities = documentVectors.map(d => {
+      const dArray = [...d.values()];
+      return Similarity.cosineSimilarity(termVectorArray, dArray);
+    });
+    return documentIdentifiers.map((d, i) => [d, similarities[i]]).filter(d => d[1] > 0).sort((a, b) => b[1] - a[1]);
   }
 }
