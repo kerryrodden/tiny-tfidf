@@ -138,8 +138,8 @@ export default class Corpus {
   }
 
   calculateTotalLength() {
-    // Total length of the collection, calculated here as the sum of all term frequencies (minus stopwords)
-    this.totalLength = [...this.getCollectionFrequencies().values()].reduce((a,b) => a + b, 0);
+    // Total length of the collection, calculated here as the sum of all document lengths (minus stopwords)
+    this.totalLength = [...this.documents.values()].map(d => d.getLength(this.stopwordFilter)).reduce((a,b) => a + b, 0);
   }
 
   getTotalLength() {

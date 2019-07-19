@@ -2,7 +2,7 @@ import { Corpus } from './index.js';
 import tape from 'tape';
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(4);
+  t.plan(5);
   const corpus = new Corpus(
     ['document1', 'document2', 'document3'],
     [
@@ -22,4 +22,5 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(topTerms.length, 7);
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
+  t.equal(corpus.getTotalLength(), 22);
 });
