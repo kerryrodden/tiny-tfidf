@@ -1,6 +1,6 @@
 {
   "name": "tiny-tfidf",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity) ",
   "main": "index.js",
   "type": "module",
