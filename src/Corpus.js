@@ -108,13 +108,6 @@ export default class Corpus {
     }
   }
 
-  getDocumentVectors() {
-    if (!this.documentVectors) {
-      this.calculateDocumentVectors();
-    }
-    return this.documentVectors;
-  }
-
   getDocumentVector(identifier) {
     if (!this.documentVectors) {
       this.calculateDocumentVectors();
