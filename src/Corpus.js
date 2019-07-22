@@ -31,7 +31,7 @@ export default class Corpus {
   calculateCollectionFrequencies() {
     this.collectionFrequencies = new Map();
     for (const document of this.documents.values()) {
-      document.getUniqueTerms().filter(this.stopwordFilter).forEach((term) => {
+      document.getUniqueTerms(this.stopwordFilter).forEach((term) => {
         if (this.collectionFrequencies.has(term)) {
           const n = this.collectionFrequencies.get(term);
           this.collectionFrequencies.set(term, n + 1);

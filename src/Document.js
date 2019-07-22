@@ -13,9 +13,9 @@ export default class Document {
     this.termFrequencies = null;
   }
 
-  calculateTermFrequencies() {
+  calculateTermFrequencies(stopwordFilter = () => true) {
     this.termFrequencies = new Map();
-    this.words.forEach(word => {
+    this.words.filter(stopwordFilter).forEach(word => {
       if (this.termFrequencies.has(word)) {
         this.termFrequencies.set(word, this.termFrequencies.get(word) + 1);
       }
@@ -25,9 +25,9 @@ export default class Document {
     });
   }
 
-  getTermFrequencies() {
+  getTermFrequencies(stopwordFilter = () => true) {
     if (!this.termFrequencies) {
-      this.calculateTermFrequencies();
+      this.calculateTermFrequencies(stopwordFilter);
     }
     return this.termFrequencies;
   }
@@ -40,8 +40,8 @@ export default class Document {
     return this.words.filter(stopwordFilter).length;
   }
 
-  getUniqueTerms() {
-    return [...this.getTermFrequencies().keys()];
+  getUniqueTerms(stopwordFilter = () => true) {
+    return [...this.getTermFrequencies(stopwordFilter).keys()];
   }
 
   getFrequency(term) {
