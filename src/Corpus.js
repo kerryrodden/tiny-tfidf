@@ -53,14 +53,6 @@ export default class Corpus {
     return this.documents.get(identifier);
   }
 
-  // TODO: potentially cut total number of terms off at a number
-  getImportantTerms(numTermsPerDocument = 30) {
-    const topTerms = this.getDocumentIdentifiers().map(d => this.getTopTermsForDocument(d, numTermsPerDocument)).flat().sort((a, b) => b[1] - a[1]);
-    const uniqueTopTerms = [...new Set(topTerms.map(t => t[0]))];
-    const importantTerms = uniqueTopTerms.filter(t => this.getCollectionFrequencies().get(t) > 1);
-    return importantTerms;
-  }
-
   getTermAsVector(t) {
     const vector = new Map();
     for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
