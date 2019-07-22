@@ -7,14 +7,16 @@ export default class Similarity {
   }
 
   static cosineSimilarity(vector1, vector2) {
+    const v1 = [...vector1.values()];
+    const v2 = [...vector2.values()];
     let dotProduct = 0.0;
     let ss1 = 0.0;
     let ss2 = 0.0;
-    const length = Math.min(vector1.length, vector2.length);
+    const length = Math.min(v1.length, v2.length);
     for (let i = 0; i < length; i++) {
-      dotProduct += vector1[i] * vector2[i];
-      ss1 += vector1[i] * vector1[i];
-      ss2 += vector2[i] * vector2[i];
+      dotProduct += v1[i] * v2[i];
+      ss1 += v1[i] * v1[i];
+      ss2 += v2[i] * v2[i];
     }
     const magnitude = Math.sqrt(ss1) * Math.sqrt(ss2);
     return magnitude ? dotProduct / magnitude : 0.0;
@@ -33,10 +35,8 @@ export default class Similarity {
     let matrix = [];
     for (let i = 0; i < vectors.length; i++) {
       matrix[i] = [];
-      let v_i = [...vectors[i].values()];
       for (let j = 0; j < vectors.length; j++) {
-        let v_j = [...vectors[j].values()];
-        matrix[i][j] = 1.0 - Similarity.cosineSimilarity(v_i, v_j);
+        matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
       }
     }
     this.similarityMatrix = { identifiers, matrix };

@@ -158,12 +158,10 @@ export default class Corpus {
 
   findSimilarDocumentsForQuery(term) {
     const termVector = this.getTermAsVector(term.toLowerCase());
-    const termVectorArray = [...termVector.values()];
     const documentIdentifiers = this.getDocumentIdentifiers();
     const documentVectors = documentIdentifiers.map(d => this.getDocumentVector(d));
     const similarities = documentVectors.map(d => {
-      const dArray = [...d.values()];
-      return Similarity.cosineSimilarity(termVectorArray, dArray);
+      return Similarity.cosineSimilarity(termVector, d);
     });
     return documentIdentifiers.map((d, i) => [d, similarities[i]]).filter(d => d[1] > 0).sort((a, b) => b[1] - a[1]);
   }
