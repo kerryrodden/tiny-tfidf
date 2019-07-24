@@ -126,10 +126,15 @@ export default class Corpus {
   }
 
   getSimilarityMatrix() {
+    console.warn("tiny-tfidf: Corpus.getSimilarityMatrix() is deprecated and has been replaced by Corpus.getDistanceMatrix().");
+    return this.getDistanceMatrix();
+  }
+
+  getDistanceMatrix() {
     if (!this.similarity) {
       this.similarity = new Similarity(this);
     }
-    return this.similarity.getSimilarityMatrix();
+    return this.similarity.getDistanceMatrix();
   }
 
   findSimilarDocumentsForQuery(term) {

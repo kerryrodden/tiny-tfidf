@@ -3,7 +3,7 @@ import Corpus from './Corpus.js';
 export default class Similarity {
   constructor(corpus) {
     this.corpus = corpus;
-    this.similarityMatrix = null; // this is expensive to calculate so only do it when needed
+    this.distanceMatrix = null; // this is expensive to calculate so only do it when needed
   }
 
   static cosineSimilarity(vector1, vector2) {
@@ -27,11 +27,11 @@ export default class Similarity {
     return this.corpus.findSimilarDocumentsForQuery(term);
   }
 
-  calculateSimilarityMatrix() {
+  calculateDistanceMatrix() {
     const identifiers = this.corpus.getDocumentIdentifiers();
     const vectors = identifiers.map(d => this.corpus.getDocumentVector(d));
 
-    // Calculate the similarity matrix. Technically they are dissimilarities (0 = identical)
+    // Calculate the distance between each pair of documents. Distance is 1.0 - similarity (so 0 = identical)
     let matrix = [];
     for (let i = 0; i < vectors.length; i++) {
       matrix[i] = [];
@@ -39,13 +39,18 @@ export default class Similarity {
         matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
       }
     }
-    this.similarityMatrix = { identifiers, matrix };
+    this.distanceMatrix = { identifiers, matrix };
+  }
+
+  getDistanceMatrix() {
+    if (!this.distanceMatrix) {
+      this.calculateDistanceMatrix();
+    }
+    return this.distanceMatrix;
   }
 
   getSimilarityMatrix() {
-    if (!this.similarityMatrix) {
-      this.calculateSimilarityMatrix();
-    }
-    return this.similarityMatrix;
+    console.warn("tiny-tfidf: Similarity.getSimilarityMatrix() is deprecated and has been replaced by Similarity.getDistanceMatrix().");
+    return this.getDistanceMatrix();
   }
 }
