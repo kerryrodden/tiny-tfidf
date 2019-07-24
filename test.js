@@ -1,10 +1,8 @@
-import { Corpus, Stopwords } from './index.js';
+import { Corpus } from './index.js';
 import tape from 'tape';
 
 tape('Unit tests for Corpus class', function (t) {
   t.plan(7);
-  const stopwords = new Stopwords();
-  const stopwordFilter = term => !stopwords.includes(term);
   const corpus = new Corpus(
     ['document1', 'document2', 'document3'],
     [
@@ -16,15 +14,15 @@ tape('Unit tests for Corpus class', function (t) {
   const n = corpus.getDocumentIdentifiers().length;
   t.equal(n, 3);
   const doc = corpus.getDocument('document3');
-  const terms = doc.getUniqueTerms(stopwordFilter);
-  // We have ignored short terms and stripped numbers, and stopword filtering has removed 'and'.
-  t.deepEqual(terms, ['test', 'document', 'number', 'three', 'bit', 'different', 'also', 'tiny', 'longer']);
+  const terms = doc.getUniqueTerms();
+  // We have ignored short terms and stripped numbers, and have not yet applied stopword filtering
+  t.deepEqual(terms, ['test', 'document', 'number', 'three', 'bit', 'different', 'and', 'also', 'tiny', 'longer']);
   const topTerms = corpus.getTopTermsForDocument('document3');
-  // No more terms should have been removed by the term weighting process
+  // Now "and" should have been removed by stopword filtering
   t.equal(topTerms.length, 9);
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
-  t.equal(corpus.getTotalLength(stopwordFilter), 22);
+  t.equal(corpus.getTotalLength(), 22);
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
   console.log(queryResults);

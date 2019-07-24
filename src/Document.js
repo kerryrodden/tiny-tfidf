@@ -3,7 +3,7 @@ export default class Document {
     this.text = text;
     this.words = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g).filter(word => {
       // Exclude very short terms and terms that start with a number
-      // Stopwords are dealt with later, when we calculate vectors and weights
+      // Stopwords are dealt with by the Corpus class
       if (word.length <= 2 || word.match(/^\d/)) {
         return false;
       } else {
@@ -13,9 +13,9 @@ export default class Document {
     this.termFrequencies = null;
   }
 
-  calculateTermFrequencies(stopwordFilter = () => true) {
+  calculateTermFrequencies() {
     this.termFrequencies = new Map();
-    this.words.filter(stopwordFilter).forEach(word => {
+    this.words.forEach(word => {
       if (this.termFrequencies.has(word)) {
         this.termFrequencies.set(word, this.termFrequencies.get(word) + 1);
       }
@@ -25,9 +25,9 @@ export default class Document {
     });
   }
 
-  getTermFrequencies(stopwordFilter = () => true) {
+  getTermFrequencies() {
     if (!this.termFrequencies) {
-      this.calculateTermFrequencies(stopwordFilter);
+      this.calculateTermFrequencies();
     }
     return this.termFrequencies;
   }
@@ -36,12 +36,17 @@ export default class Document {
     return this.text;
   }
 
-  getLength(stopwordFilter = () => true) {
-    return this.words.filter(stopwordFilter).length;
+  getLength() {
+    console.warn("tiny-tfidf: Document.getLength() is deprecated - use Document.getAllTerms().");
+    return this.getAllTerms().length;
   }
 
-  getUniqueTerms(stopwordFilter = () => true) {
-    return [...this.getTermFrequencies(stopwordFilter).keys()];
+  getAllTerms() {
+    return this.words;
+  }
+
+  getUniqueTerms() {
+    return [...this.getTermFrequencies().keys()];
   }
 
   getFrequency(term) {
