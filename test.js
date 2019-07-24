@@ -25,7 +25,6 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(corpus.getTotalLength(), 22);
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
-  console.log(queryResults);
   // All documents should match this query (because of the term 'test')
   t.equal(queryResults.length, 3);
   // Document 3 should be the highest ranked (because of the term 'bit')
