@@ -53,15 +53,6 @@ export default class Corpus {
     return this.documents.get(identifier);
   }
 
-  getTermAsVector(t) {
-    const vector = new Map();
-    for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
-      const weight = (t === term) ? idf : 0.0;
-      vector.set(term, weight);
-    }
-    return vector;
-  }
-
   getDocumentIdentifiers() {
     return [...this.documents.keys()];
   }
@@ -142,12 +133,24 @@ export default class Corpus {
   }
 
   findSimilarDocumentsForQuery(term) {
-    const termVector = this.getTermAsVector(term.toLowerCase());
-    const documentIdentifiers = this.getDocumentIdentifiers();
-    const documentVectors = documentIdentifiers.map(d => this.getDocumentVector(d));
-    const similarities = documentVectors.map(d => {
-      return Similarity.cosineSimilarity(termVector, d);
+    console.warn('tiny-tfidf: Corpus.findSimilarDocumentsForQuery() has been replaced by Corpus.getResultsForQuery().');
+    return this.getResultsForQuery(term);
+  }
+  // Score each document against the query string, returning a ranked list of document identifiers and scores.
+  // The score for a document is the total combined weight of each query term that appears in the document.
+  getResultsForQuery(query) {
+    const terms = new Document(query).getUniqueTerms();
+    const scores = this.getDocumentIdentifiers().map(d => {
+      const vector = this.getDocumentVector(d);
+      let score = 0.0;
+      terms.forEach(t => {
+        const weight = vector.get(t);
+        if (weight) {
+          score += weight;
+        }
+      });
+      return [d, score];
     });
-    return documentIdentifiers.map((d, i) => [d, similarities[i]]).filter(d => d[1] > 0).sort((a, b) => b[1] - a[1]);
+    return scores.filter(d => d[1] > 0).sort((a, b) => b[1] - a[1]);
   }
 }

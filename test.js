@@ -2,7 +2,7 @@ import { Corpus, Stopwords } from './index.js';
 import tape from 'tape';
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(5);
+  t.plan(7);
   const stopwords = new Stopwords();
   const stopwordFilter = term => !stopwords.includes(term);
   const corpus = new Corpus(
@@ -26,4 +26,9 @@ tape('Unit tests for Corpus class', function (t) {
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
   t.equal(corpus.getTotalLength(stopwordFilter), 22);
+
+  const queryResults = corpus.getResultsForQuery('a bit of a test query');
+  // Document 3 should be the only match for this query (because of the term 'bit' - 'test' has been removed by IDF)
+  t.equal(queryResults.length, 1);
+  t.equal(queryResults[0][0], 'document3');
 });
