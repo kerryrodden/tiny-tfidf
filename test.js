@@ -17,18 +17,19 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(n, 3);
   const doc = corpus.getDocument('document3');
   const terms = doc.getUniqueTerms(stopwordFilter);
-  // We have ignored short terms and stripped numbers, and stopword filtering has removed 'and', but TFIDF has not been applied yet
+  // We have ignored short terms and stripped numbers, and stopword filtering has removed 'and'.
   t.deepEqual(terms, ['test', 'document', 'number', 'three', 'bit', 'different', 'also', 'tiny', 'longer']);
   const topTerms = corpus.getTopTermsForDocument('document3');
-  console.log(topTerms);
-  // An IDF weight of 0 means that 'test' and 'document' are gone, and stopword filtering has removed 'and'
-  t.equal(topTerms.length, 7);
+  // No more terms should have been removed by the term weighting process
+  t.equal(topTerms.length, 9);
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
   t.equal(corpus.getTotalLength(stopwordFilter), 22);
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
-  // Document 3 should be the only match for this query (because of the term 'bit' - 'test' has been removed by IDF)
-  t.equal(queryResults.length, 1);
+  console.log(queryResults);
+  // All documents should match this query (because of the term 'test')
+  t.equal(queryResults.length, 3);
+  // Document 3 should be the highest ranked (because of the term 'bit')
   t.equal(queryResults[0][0], 'document3');
 });

@@ -64,11 +64,15 @@ export default class Corpus {
     return commonTerms.sort((a, b) => b[1] - a[1]).slice(0, maxTerms);
   }
 
+  // Collection frequency weight (a.k.a. inverse document frequency). Compared to the formula in the original paper,
+  // we add 1 to N (the number of documents in the collection) so that terms which appear in every document (and are not
+  // stopwords) get a very small CFW instead of zero (and therefore, later, get a very small weight instead of zero, meaning
+  // that they can still be retrieved by queries and appear in similarity calculations).
   calculateCollectionFrequencyWeights() {
     this.collectionFrequencyWeights = new Map();
     const N = this.documents.size;
     for (const [term, n] of this.getCollectionFrequencies().entries()) {
-      this.collectionFrequencyWeights.set(term, Math.log(N) - Math.log(n));
+      this.collectionFrequencyWeights.set(term, Math.log(N + 1) - Math.log(n));
     }
   }
 
