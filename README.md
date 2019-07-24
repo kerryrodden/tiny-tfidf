@@ -32,13 +32,15 @@ console.log(corpus.getTopTermsForDocument("document3"));
 
 // result
 [
-  [ 'bit', 1.4052017645754888 ],
-  [ 'three', 0.9441199355741565 ],
-  [ 'different', 0.9441199355741565 ],
-  [ 'tiny', 0.9441199355741565 ],
-  [ 'longer', 0.9441199355741565 ],
-  [ 'number', 0.34844657728045364 ],
-  [ 'also', 0.34844657728045364 ]
+  [ 'bit', 1.773167206083581 ],
+  [ 'three', 1.1913467165874059 ],
+  [ 'different', 1.1913467165874059 ],
+  [ 'tiny', 1.1913467165874059 ],
+  [ 'longer', 1.1913467165874059 ],
+  [ 'number', 0.5956733582937029 ],
+  [ 'also', 0.5956733582937029 ],
+  [ 'test', 0.2472267810132493 ],
+  [ 'document', 0.2472267810132493 ]
 ]
 ```
 
@@ -51,3 +53,43 @@ Example with Node v12.6.0 :
 ```sh
 node --experimental-modules --es-module-specifier-resolution=node test.js
 ```
+## API (v0.4)
+
+### `Corpus` class
+
+- constructor
+- `getCollectionFrequencies()`
+- `getDocument(identifier)`
+- `getDocumentIdentifiers()`
+- `getCommonTerms(identifier1, identifier2)`
+- `getCollectionFrequencyWeights()`
+- `getDocumentVector(identifier)`
+- `getTopTermsForDocument(identifier)`
+- `getTotalLength()`
+- `getDistanceMatrix()`
+- `getResultsForQuery(query)`
+
+The other methods in the class (whose names start with `calculate`) are intended for internal use.
+
+### `Document` class
+
+- constructor
+- `getTermFrequencies()`
+- `getText()`
+- `getAllTerms()`
+- `getUniqueTerms()`
+- `getFrequency(term)`
+
+The other method, `calculateTermFrequencies`, is intended for internal use.
+
+### `Similarity` class
+
+- constructor: needs a `Corpus` object
+- `getDistanceMatrix()`
+
+The other method, `calculateDistanceMatrix`, is intended for internal use.
+
+### `Stopwords` class
+
+- constructor
+- `includes(term)`
