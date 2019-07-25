@@ -87,7 +87,7 @@ The other method, `calculateTermFrequencies`, is intended for internal use.
 - constructor: needs a `Corpus` object
 - `getDistanceMatrix()`
 
-The other method, `calculateDistanceMatrix`, is intended for internal use.
+Plus a static method, `cosineSimilarity(vector1, vector2)`, which is currently only used to calculate individual entries in the distance matrix. The other method, `calculateDistanceMatrix`, is intended for internal use.
 
 ### `Stopwords` class
 

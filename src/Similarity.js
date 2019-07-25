@@ -14,6 +14,7 @@ export default class Similarity {
     let ss2 = 0.0;
     const length = Math.min(v1.length, v2.length);
     for (let i = 0; i < length; i++) {
+      if (v1[i] === 0 && v2[i] === 0) continue; // This pair of terms will not affect either the dot product or the magnitude
       dotProduct += v1[i] * v2[i];
       ss1 += v1[i] * v1[i];
       ss2 += v2[i] * v2[i];
@@ -36,10 +37,10 @@ export default class Similarity {
     for (let i = 0; i < vectors.length; i++) {
       for (let j = i; j < vectors.length; j++) {
         if (i === j) {
-          matrix[i][j] = 0.0;
+          matrix[i][j] = 0.0; // a document is identical to itself
         } else {
           matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
-          matrix[j][i] = matrix[i][j];
+          matrix[j][i] = matrix[i][j]; // the matrix is symmetric
         }
       }
     }
