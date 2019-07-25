@@ -1,8 +1,8 @@
-import { Corpus } from './index.js';
+import { Corpus, Similarity } from './index.js';
 import tape from 'tape';
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(7);
+  t.plan(8);
   const corpus = new Corpus(
     ['document1', 'document2', 'document3'],
     [
@@ -29,4 +29,9 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(queryResults.length, 3);
   // Document 3 should be the highest ranked (because of the term 'bit')
   t.equal(queryResults[0][0], 'document3');
+
+  const similarity1and2 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document2'));
+  const similarity1and3 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document3'));
+  // The first two documents should be more similar to each other than the first and third.
+  t.ok(similarity1and2 > similarity1and3);
 });

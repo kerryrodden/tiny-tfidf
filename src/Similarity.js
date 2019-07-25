@@ -32,11 +32,15 @@ export default class Similarity {
     const vectors = identifiers.map(d => this.corpus.getDocumentVector(d));
 
     // Calculate the distance between each pair of documents. Distance is 1.0 - similarity (so 0 = identical)
-    let matrix = [];
+    const matrix = new Array(vectors.length).fill(null).map(() => new Array(vectors.length));
     for (let i = 0; i < vectors.length; i++) {
-      matrix[i] = [];
-      for (let j = 0; j < vectors.length; j++) {
-        matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
+      for (let j = i; j < vectors.length; j++) {
+        if (i === j) {
+          matrix[i][j] = 0.0;
+        } else {
+          matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
+          matrix[j][i] = matrix[i][j];
+        }
       }
     }
     this.distanceMatrix = { identifiers, matrix };
