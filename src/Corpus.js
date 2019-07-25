@@ -90,11 +90,11 @@ export default class Corpus {
     const avgLength = this.getTotalLength() / this.documents.size;
     for (const [identifier, document] of this.documents) {
       const vector = new Map();
+      const ndl = document.getAllTerms().filter(this.stopwordFilter).length / avgLength;
       for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
         let cw = 0.0;
         const tf = document.getFrequency(term);
         if (tf) {
-          const ndl = document.getAllTerms().filter(this.stopwordFilter).length / avgLength;
           cw = (idf * tf * (K1 + 1)) / ((K1 * ((1 - b) + (b * ndl))) + tf);
         }
         vector.set(term, cw);
