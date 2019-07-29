@@ -15,14 +15,15 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(n, 3);
   const doc = corpus.getDocument('document3');
   const terms = doc.getUniqueTerms();
-  // We have ignored short terms and stripped numbers, and have not yet applied stopword filtering
+  // We have ignored short terms (<=2 characters) and stripped numbers, and have not yet applied stopword filtering
   t.deepEqual(terms, ['test', 'document', 'number', 'three', 'bit', 'different', 'and', 'also', 'tiny', 'longer']);
   const topTerms = corpus.getTopTermsForDocument('document3');
   // Now "and" should have been removed by stopword filtering
   t.equal(topTerms.length, 9);
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
-  t.equal(corpus.getTotalLength(), 22);
+  // Total length of the corpus is the total number of words (including stopwords but excluding words of <=2 characters)
+  t.equal(corpus.getTotalLength(), 26);
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
   // All documents should match this query (because of the term 'test')
