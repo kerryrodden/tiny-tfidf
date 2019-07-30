@@ -148,6 +148,9 @@ export default class Corpus {
   // Score each document against the query string, returning a ranked list of document identifiers and scores.
   // The score for a document is the total combined weight of each query term that appears in the document.
   getResultsForQuery(query) {
+    if (!query || typeof query !== "string" || query.length === 0) {
+      return [];
+    }
     const terms = new Document(query).getUniqueTerms();
     const scores = this.getDocumentIdentifiers().map(d => {
       const vector = this.getDocumentVector(d);

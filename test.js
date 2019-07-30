@@ -2,7 +2,7 @@ import { Corpus, Similarity } from './index.js';
 import tape from 'tape';
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(8);
+  t.plan(10);
   const corpus = new Corpus(
     ['document1', 'document2', 'document3'],
     [
@@ -30,6 +30,9 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(queryResults.length, 3);
   // Document 3 should be the highest ranked (because of the term 'bit')
   t.equal(queryResults[0][0], 'document3');
+  // We should guard against a query that is empty or is not a string
+  t.equal(corpus.getResultsForQuery("").length, 0);
+  t.equal(corpus.getResultsForQuery(2).length, 0);
 
   const similarity1and2 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document2'));
   const similarity1and3 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document3'));
