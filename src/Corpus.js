@@ -11,9 +11,8 @@ export default class Corpus {
   // - K1 modifies term frequency (higher values increase the influence)
   // - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and 0 means they are multitopic)
 
-  constructor(names, texts, customStopwords = [], K1 = 1.5, b = 0.75) {
-    this.stopwords = new Stopwords(customStopwords);
-    this.stopwordFilter = term => !this.stopwords.includes(term);
+  constructor(names, texts, useStopwords = true, customStopwords = [], K1 = 1.5, b = 0.75) {
+    this.stopwords = useStopwords ? new Stopwords(customStopwords) : null;
     this.K1 = K1;
     this.b = b;
     this.documents = new Map();
@@ -31,7 +30,11 @@ export default class Corpus {
   calculateCollectionFrequencies() {
     this.collectionFrequencies = new Map();
     for (const document of this.documents.values()) {
-      document.getUniqueTerms().filter(this.stopwordFilter).forEach((term) => {
+      let terms = document.getUniqueTerms();
+      if (this.stopwords) {
+        terms = terms.filter(t => !this.stopwords.includes(t));
+      }
+      terms.forEach((term) => {
         if (this.collectionFrequencies.has(term)) {
           const n = this.collectionFrequencies.get(term);
           this.collectionFrequencies.set(term, n + 1);
@@ -42,11 +45,24 @@ export default class Corpus {
     };
   }
 
-  getCollectionFrequencies() {
+  // Return an array containing the unique terms in this corpus (excluding stopwords)
+  getTerms() {
     if (!this.collectionFrequencies) {
       this.calculateCollectionFrequencies();
     }
-    return this.collectionFrequencies;
+    return Array.from(this.collectionFrequencies.keys());
+  }
+
+  getCollectionFrequencies() {
+    console.warn("tiny-tfidf: Corpus.getCollectionFrequencies() is deprecated and has been replaced by Corpus.getCollectionFrequency(term).");
+    return null;
+  }
+
+  getCollectionFrequency(term) {
+    if (!this.collectionFrequencies) {
+      this.calculateCollectionFrequencies();
+    }
+    return this.collectionFrequencies.get(term);
   }
 
   getDocument(identifier) {
@@ -69,21 +85,32 @@ export default class Corpus {
   // stopwords) get a very small CFW instead of zero (and therefore, later, get a very small weight instead of zero, meaning
   // that they can still be retrieved by queries and appear in similarity calculations).
   calculateCollectionFrequencyWeights() {
+    if (!this.collectionFrequencies) {
+      this.calculateCollectionFrequencies();
+    }
     this.collectionFrequencyWeights = new Map();
     const N = this.documents.size;
-    for (const [term, n] of this.getCollectionFrequencies().entries()) {
+    for (const [term, n] of this.collectionFrequencies.entries()) {
       this.collectionFrequencyWeights.set(term, Math.log(N + 1) - Math.log(n));
     }
   }
 
   getCollectionFrequencyWeights() {
+    console.warn("tiny-tfidf: Corpus.getCollectionFrequencyWeights() is deprecated and has been replaced by Corpus.getCollectionFrequencyWeight(term).");
+    return null;
+  }
+
+  getCollectionFrequencyWeight(term) {
     if (!this.collectionFrequencyWeights) {
       this.calculateCollectionFrequencyWeights();
     }
-    return this.collectionFrequencyWeights;
+    return this.collectionFrequencyWeights.get(term);
   }
 
   calculateDocumentVectors() {
+    if (!this.collectionFrequencyWeights) {
+      this.calculateCollectionFrequencyWeights();
+    }
     this.documentVectors = new Map();
     const K1 = this.K1;
     const b = this.b;
@@ -91,7 +118,7 @@ export default class Corpus {
     for (const [identifier, document] of this.documents) {
       const vector = new Map();
       const ndl = document.getAllTerms().length / avgLength;
-      for (const [term, idf] of this.getCollectionFrequencyWeights().entries()) {
+      for (const [term, idf] of this.collectionFrequencyWeights.entries()) {
         let cw = 0.0;
         const tf = document.getFrequency(term);
         if (tf) {
