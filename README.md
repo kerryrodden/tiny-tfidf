@@ -53,16 +53,17 @@ Example with Node v12.6.0 :
 ```sh
 node --experimental-modules --es-module-specifier-resolution=node test.js
 ```
-## API (v0.4)
+## API (v0.6)
 
 ### `Corpus` class
 
 - constructor
-- `getCollectionFrequencies()`
+- `getTerms()`
+- `getCollectionFrequency(term)`
 - `getDocument(identifier)`
 - `getDocumentIdentifiers()`
 - `getCommonTerms(identifier1, identifier2)`
-- `getCollectionFrequencyWeights()`
+- `getCollectionFrequencyWeight(term)`
 - `getDocumentVector(identifier)`
 - `getTopTermsForDocument(identifier)`
 - `getTotalLength()`
@@ -74,11 +75,10 @@ The other methods in the class (whose names start with `calculate`) are intended
 ### `Document` class
 
 - constructor
-- `getTermFrequencies()`
 - `getText()`
-- `getAllTerms()`
+- `getLength()`
 - `getUniqueTerms()`
-- `getFrequency(term)`
+- `getTermFrequency(term)`
 
 The other method, `calculateTermFrequencies`, is intended for internal use.
 
