@@ -26,10 +26,15 @@ export default class Document {
   }
 
   getTermFrequencies() {
+    console.warn("tiny-tfidf: Document.getTermFrequencies() is deprecated; use Document.getTermFrequency(term) instead.");
+    return null;
+  }
+
+  getTermFrequency(term) {
     if (!this.termFrequencies) {
       this.calculateTermFrequencies();
     }
-    return this.termFrequencies;
+    return this.termFrequencies.get(term);
   }
 
   getText() {
@@ -37,20 +42,24 @@ export default class Document {
   }
 
   getLength() {
-    console.warn("tiny-tfidf: Document.getLength() is deprecated - use Document.getAllTerms().");
-    return this.getAllTerms().length;
+    return this.words.length;
   }
 
   getAllTerms() {
-    return this.words;
+    console.warn("tiny-tfidf: Document.getAllTerms() is deprecated.");
+    return null;
   }
 
   getUniqueTerms() {
-    return [...this.getTermFrequencies().keys()];
+    if (!this.termFrequencies) {
+      this.calculateTermFrequencies();
+    }
+    return Array.from(this.termFrequencies.keys());
   }
 
   getFrequency(term) {
-    return this.getTermFrequencies().get(term);
+    console.warn("tiny-tfidf: Document.getFrequency() is deprecated; use Document.getTermFrequency() instead.");
+    return this.getTermFrequency(term);
   }
 
   setVector(vector) {

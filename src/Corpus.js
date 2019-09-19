@@ -117,10 +117,10 @@ export default class Corpus {
     const avgLength = this.getTotalLength() / this.documents.size;
     for (const [identifier, document] of this.documents) {
       const vector = new Map();
-      const ndl = document.getAllTerms().length / avgLength;
+      const ndl = document.getLength() / avgLength;
       for (const [term, idf] of this.collectionFrequencyWeights.entries()) {
         let cw = 0.0;
-        const tf = document.getFrequency(term);
+        const tf = document.getTermFrequency(term);
         if (tf) {
           cw = (idf * tf * (K1 + 1)) / ((K1 * ((1 - b) + (b * ndl))) + tf);
         }
@@ -146,7 +146,7 @@ export default class Corpus {
 
   calculateTotalLength() {
     // Total length of the collection, calculated here as the sum of all document lengths
-    this.totalLength = [...this.documents.values()].map(d => d.getAllTerms().length).reduce((a,b) => a + b, 0);
+    this.totalLength = [...this.documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
   }
 
   getTotalLength() {
