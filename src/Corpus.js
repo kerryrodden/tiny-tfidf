@@ -11,7 +11,7 @@ export default class Corpus {
   // - K1 modifies term frequency (higher values increase the influence)
   // - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and 0 means they are multitopic)
 
-  constructor(names, texts, useStopwords = true, customStopwords = [], K1 = 1.5, b = 0.75) {
+  constructor(names, texts, useStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75) {
     this.stopwords = useStopwords ? new Stopwords(customStopwords) : null;
     this.K1 = K1;
     this.b = b;
