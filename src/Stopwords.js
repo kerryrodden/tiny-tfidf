@@ -1,6 +1,6 @@
 // English stopwords, assuming tokenization has occurred and 1-letter tokens are already filtered out.
 // Based on list from NLTK found at https://gist.github.com/sebleier/554280
-const stopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
+const defaultStopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your', 'yours',
   'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself', 'it', 'its',
   'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
   'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having',
@@ -15,8 +15,9 @@ const stopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you'
 
 export default class Stopwords {
 
-  constructor(customStopwords = []) {
-    this.stopwords = new Map(stopwords.concat(customStopwords).map(d => [d, true]));
+  constructor(useDefaultStopwords = true, customStopwords = []) {
+    const stopwords = useDefaultStopwords ? customStopwords.concat(defaultStopwords) : customStopwords;
+    this.stopwords = new Map(stopwords.map(d => [d, true]));
   }
 
   includes(word) {

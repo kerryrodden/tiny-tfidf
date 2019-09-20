@@ -11,8 +11,8 @@ export default class Corpus {
   // - K1 modifies term frequency (higher values increase the influence)
   // - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and 0 means they are multitopic)
 
-  constructor(names, texts, useStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75) {
-    this.stopwords = useStopwords ? new Stopwords(customStopwords) : null;
+  constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75) {
+    this.stopwords = new Stopwords(useDefaultStopwords, customStopwords);
     this.K1 = K1;
     this.b = b;
     this.documents = new Map();
@@ -30,11 +30,7 @@ export default class Corpus {
   calculateCollectionFrequencies() {
     this.collectionFrequencies = new Map();
     for (const document of this.documents.values()) {
-      let terms = document.getUniqueTerms();
-      if (this.stopwords) {
-        terms = terms.filter(t => !this.stopwords.includes(t));
-      }
-      terms.forEach((term) => {
+      document.getUniqueTerms().filter(t => !this.stopwords.includes(t)).forEach((term) => {
         if (this.collectionFrequencies.has(term)) {
           const n = this.collectionFrequencies.get(term);
           this.collectionFrequencies.set(term, n + 1);
