@@ -188,4 +188,9 @@ export default class Corpus {
     });
     return scores.filter(d => d[1] > 0).sort((a, b) => b[1] - a[1]);
   }
+
+  // Retrieve the stopword filter for this corpus (for inspection or debugging)
+  getStopwords() {
+    return this.stopwords;
+  }
 }

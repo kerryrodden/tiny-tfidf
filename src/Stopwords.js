@@ -20,7 +20,13 @@ export default class Stopwords {
     this.stopwords = new Map(stopwords.map(d => [d, true]));
   }
 
+  // Test whether a word is a stopword
   includes(word) {
     return this.stopwords.has(word);
+  }
+
+  // Get the full list of stopwords currently in use (for inspection or debugging)
+  getStopwordList() {
+    return Array.from(this.stopwords.keys());
   }
 }
