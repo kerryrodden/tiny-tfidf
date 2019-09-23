@@ -22,7 +22,6 @@ export default class Corpus {
     this._collectionFrequencies = null;
     this._collectionFrequencyWeights = null;
     this._documentVectors = null;
-    this._totalLength = 0;
     this._similarity = null;
   }
 
@@ -110,7 +109,9 @@ export default class Corpus {
     this._documentVectors = new Map();
     const K1 = this._K1;
     const b = this._b;
-    const avgLength = this.getTotalLength() / this._documents.size;
+    // Total length of the collection, calculated here as the sum of all document lengths
+    const totalLength = [...this._documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
+    const avgLength = totalLength / this._documents.size;
     for (const [identifier, document] of this._documents) {
       const vector = new Map();
       const ndl = document.getLength() / avgLength;
@@ -140,16 +141,9 @@ export default class Corpus {
     return sortedTerms.slice(0, numTerms);
   }
 
-  _calculateTotalLength() {
-    // Total length of the collection, calculated here as the sum of all document lengths
-    this._totalLength = [...this._documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
-  }
-
   getTotalLength() {
-    if (!this._totalLength) {
-      this._calculateTotalLength();
-    }
-    return this._totalLength;
+    console.warn("tiny-tfidf: Corpus.getTotalLength() is deprecated; use Document.getLength() instead.");
+    return 0;
   }
 
   getSimilarityMatrix() {

@@ -11,7 +11,7 @@ const corpus = new Corpus(
 );
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(8);
+  t.plan(7);
   const n = corpus.getDocumentIdentifiers().length;
   t.equal(n, 3);
   const topTerms = corpus.getTopTermsForDocument('document3');
@@ -19,8 +19,6 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(topTerms.length, 9);
   // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
   t.equal(topTerms[0][0], 'bit');
-  // Total length of the corpus is the total number of words (including stopwords but excluding words of <=2 characters)
-  t.equal(corpus.getTotalLength(), 26);
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
   // All documents should match this query (because of the term 'test')
