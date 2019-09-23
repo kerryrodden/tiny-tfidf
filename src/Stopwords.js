@@ -17,16 +17,16 @@ export default class Stopwords {
 
   constructor(useDefaultStopwords = true, customStopwords = []) {
     const stopwords = useDefaultStopwords ? customStopwords.concat(defaultStopwords) : customStopwords;
-    this.stopwords = new Map(stopwords.map(d => [d, true]));
+    this._stopwords = new Map(stopwords.map(d => [d, true]));
   }
 
   // Test whether a word is a stopword
   includes(word) {
-    return this.stopwords.has(word);
+    return this._stopwords.has(word);
   }
 
   // Get the full list of stopwords currently in use (for inspection or debugging)
   getStopwordList() {
-    return Array.from(this.stopwords.keys());
+    return Array.from(this._stopwords.keys());
   }
 }

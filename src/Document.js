@@ -1,7 +1,7 @@
 export default class Document {
   constructor(text) {
-    this.text = text;
-    this.words = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g).filter(word => {
+    this._text = text;
+    this._words = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g).filter(word => {
       // Exclude very short terms and terms that start with a number
       // Stopwords are dealt with by the Corpus class
       if (word.length <= 2 || word.match(/^\d/)) {
@@ -10,17 +10,17 @@ export default class Document {
         return true;
       }
     }).map(word => word.toLowerCase());
-    this.termFrequencies = null;
+    this._termFrequencies = null;
   }
 
-  calculateTermFrequencies() {
-    this.termFrequencies = new Map();
-    this.words.forEach(word => {
-      if (this.termFrequencies.has(word)) {
-        this.termFrequencies.set(word, this.termFrequencies.get(word) + 1);
+  _calculateTermFrequencies() {
+    this._termFrequencies = new Map();
+    this._words.forEach(word => {
+      if (this._termFrequencies.has(word)) {
+        this._termFrequencies.set(word, this._termFrequencies.get(word) + 1);
       }
       else {
-        this.termFrequencies.set(word, 1);
+        this._termFrequencies.set(word, 1);
       }
     });
   }
@@ -31,18 +31,18 @@ export default class Document {
   }
 
   getTermFrequency(term) {
-    if (!this.termFrequencies) {
-      this.calculateTermFrequencies();
+    if (!this._termFrequencies) {
+      this._calculateTermFrequencies();
     }
-    return this.termFrequencies.get(term);
+    return this._termFrequencies.get(term);
   }
 
   getText() {
-    return this.text;
+    return this._text;
   }
 
   getLength() {
-    return this.words.length;
+    return this._words.length;
   }
 
   getAllTerms() {
@@ -51,10 +51,10 @@ export default class Document {
   }
 
   getUniqueTerms() {
-    if (!this.termFrequencies) {
-      this.calculateTermFrequencies();
+    if (!this._termFrequencies) {
+      this._calculateTermFrequencies();
     }
-    return Array.from(this.termFrequencies.keys());
+    return Array.from(this._termFrequencies.keys());
   }
 
   getFrequency(term) {

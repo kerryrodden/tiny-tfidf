@@ -12,30 +12,30 @@ export default class Corpus {
   // - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and 0 means they are multitopic)
 
   constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75) {
-    this.stopwords = new Stopwords(useDefaultStopwords, customStopwords);
-    this.K1 = K1;
-    this.b = b;
-    this.documents = new Map();
+    this._stopwords = new Stopwords(useDefaultStopwords, customStopwords);
+    this._K1 = K1;
+    this._b = b;
+    this._documents = new Map();
     for (let i = 0; i < texts.length; i++) {
-      this.documents.set(names[i], new Document(texts[i]));
+      this._documents.set(names[i], new Document(texts[i]));
     }
-    this.collectionFrequencies = null;
-    this.collectionFrequencyWeights = null;
-    this.documentVectors = null;
-    this.totalLength = 0;
-    this.similarity = null;
+    this._collectionFrequencies = null;
+    this._collectionFrequencyWeights = null;
+    this._documentVectors = null;
+    this._totalLength = 0;
+    this._similarity = null;
   }
 
   // Collection frequency = how many unique documents each term appears in
-  calculateCollectionFrequencies() {
-    this.collectionFrequencies = new Map();
-    for (const document of this.documents.values()) {
-      document.getUniqueTerms().filter(t => !this.stopwords.includes(t)).forEach((term) => {
-        if (this.collectionFrequencies.has(term)) {
-          const n = this.collectionFrequencies.get(term);
-          this.collectionFrequencies.set(term, n + 1);
+  _calculateCollectionFrequencies() {
+    this._collectionFrequencies = new Map();
+    for (const document of this._documents.values()) {
+      document.getUniqueTerms().filter(t => !this._stopwords.includes(t)).forEach((term) => {
+        if (this._collectionFrequencies.has(term)) {
+          const n = this._collectionFrequencies.get(term);
+          this._collectionFrequencies.set(term, n + 1);
         } else {
-          this.collectionFrequencies.set(term, 1);
+          this._collectionFrequencies.set(term, 1);
         }
       });
     };
@@ -43,10 +43,10 @@ export default class Corpus {
 
   // Return an array containing the unique terms in this corpus (excluding stopwords)
   getTerms() {
-    if (!this.collectionFrequencies) {
-      this.calculateCollectionFrequencies();
+    if (!this._collectionFrequencies) {
+      this._calculateCollectionFrequencies();
     }
-    return Array.from(this.collectionFrequencies.keys());
+    return Array.from(this._collectionFrequencies.keys());
   }
 
   getCollectionFrequencies() {
@@ -55,18 +55,18 @@ export default class Corpus {
   }
 
   getCollectionFrequency(term) {
-    if (!this.collectionFrequencies) {
-      this.calculateCollectionFrequencies();
+    if (!this._collectionFrequencies) {
+      this._calculateCollectionFrequencies();
     }
-    return this.collectionFrequencies.get(term);
+    return this._collectionFrequencies.get(term);
   }
 
   getDocument(identifier) {
-    return this.documents.get(identifier);
+    return this._documents.get(identifier);
   }
 
   getDocumentIdentifiers() {
-    return [...this.documents.keys()];
+    return [...this._documents.keys()];
   }
 
   getCommonTerms(identifier1, identifier2, maxTerms = 10) {
@@ -80,14 +80,14 @@ export default class Corpus {
   // we add 1 to N (the number of documents in the collection) so that terms which appear in every document (and are not
   // stopwords) get a very small CFW instead of zero (and therefore, later, get a very small weight instead of zero, meaning
   // that they can still be retrieved by queries and appear in similarity calculations).
-  calculateCollectionFrequencyWeights() {
-    if (!this.collectionFrequencies) {
-      this.calculateCollectionFrequencies();
+  _calculateCollectionFrequencyWeights() {
+    if (!this._collectionFrequencies) {
+      this._calculateCollectionFrequencies();
     }
-    this.collectionFrequencyWeights = new Map();
-    const N = this.documents.size;
-    for (const [term, n] of this.collectionFrequencies.entries()) {
-      this.collectionFrequencyWeights.set(term, Math.log(N + 1) - Math.log(n));
+    this._collectionFrequencyWeights = new Map();
+    const N = this._documents.size;
+    for (const [term, n] of this._collectionFrequencies.entries()) {
+      this._collectionFrequencyWeights.set(term, Math.log(N + 1) - Math.log(n));
     }
   }
 
@@ -97,24 +97,24 @@ export default class Corpus {
   }
 
   getCollectionFrequencyWeight(term) {
-    if (!this.collectionFrequencyWeights) {
-      this.calculateCollectionFrequencyWeights();
+    if (!this._collectionFrequencyWeights) {
+      this._calculateCollectionFrequencyWeights();
     }
-    return this.collectionFrequencyWeights.get(term);
+    return this._collectionFrequencyWeights.get(term);
   }
 
-  calculateDocumentVectors() {
-    if (!this.collectionFrequencyWeights) {
-      this.calculateCollectionFrequencyWeights();
+  _calculateDocumentVectors() {
+    if (!this._collectionFrequencyWeights) {
+      this._calculateCollectionFrequencyWeights();
     }
-    this.documentVectors = new Map();
-    const K1 = this.K1;
-    const b = this.b;
-    const avgLength = this.getTotalLength() / this.documents.size;
-    for (const [identifier, document] of this.documents) {
+    this._documentVectors = new Map();
+    const K1 = this._K1;
+    const b = this._b;
+    const avgLength = this.getTotalLength() / this._documents.size;
+    for (const [identifier, document] of this._documents) {
       const vector = new Map();
       const ndl = document.getLength() / avgLength;
-      for (const [term, idf] of this.collectionFrequencyWeights.entries()) {
+      for (const [term, idf] of this._collectionFrequencyWeights.entries()) {
         let cw = 0.0;
         const tf = document.getTermFrequency(term);
         if (tf) {
@@ -122,15 +122,15 @@ export default class Corpus {
         }
         vector.set(term, cw);
       }
-      this.documentVectors.set(identifier, vector);
+      this._documentVectors.set(identifier, vector);
     }
   }
 
   getDocumentVector(identifier) {
-    if (!this.documentVectors) {
-      this.calculateDocumentVectors();
+    if (!this._documentVectors) {
+      this._calculateDocumentVectors();
     }
-    return this.documentVectors.get(identifier);
+    return this._documentVectors.get(identifier);
   }
 
   getTopTermsForDocument(identifier, numTerms = 30) {
@@ -140,16 +140,16 @@ export default class Corpus {
     return sortedTerms.slice(0, numTerms);
   }
 
-  calculateTotalLength() {
+  _calculateTotalLength() {
     // Total length of the collection, calculated here as the sum of all document lengths
-    this.totalLength = [...this.documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
+    this._totalLength = [...this._documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
   }
 
   getTotalLength() {
-    if (!this.totalLength) {
-      this.calculateTotalLength();
+    if (!this._totalLength) {
+      this._calculateTotalLength();
     }
-    return this.totalLength;
+    return this._totalLength;
   }
 
   getSimilarityMatrix() {
@@ -158,10 +158,10 @@ export default class Corpus {
   }
 
   getDistanceMatrix() {
-    if (!this.similarity) {
-      this.similarity = new Similarity(this);
+    if (!this._similarity) {
+      this._similarity = new Similarity(this);
     }
-    return this.similarity.getDistanceMatrix();
+    return this._similarity.getDistanceMatrix();
   }
 
   findSimilarDocumentsForQuery(term) {
@@ -191,6 +191,6 @@ export default class Corpus {
 
   // Retrieve the stopword filter for this corpus (for inspection or debugging)
   getStopwords() {
-    return this.stopwords;
+    return this._stopwords;
   }
 }
