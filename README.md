@@ -1,7 +1,7 @@
 # tiny-tfidf
 ![npm](https://img.shields.io/npm/v/tiny-tfidf.svg)
 
-Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity). The goal is to create something simple that can be used to explain or experiment with the techniques, using a small set of documents.
+Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity). The goal is to create something simple that can be used to explain or experiment with the techniques, using a small set of documents. Everything is done in memory so this library is not suitable for large-scale use.
 
 The term weighting scheme is BM25, as described in this [technical report](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-356.pdf) by Stephen Robertson and Karen Spärck Jones.
 
@@ -57,7 +57,8 @@ node --experimental-modules --es-module-specifier-resolution=node test.js
 
 ### `Corpus` class
 
-- constructor
+This is the main class that you will use directly.
+- `constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75)`: `names` and `texts` are parallel arrays containing the document identifiers and the full texts of each document
 - `getTerms()`
 - `getCollectionFrequency(term)`
 - `getDocument(identifier)`
@@ -69,27 +70,30 @@ node --experimental-modules --es-module-specifier-resolution=node test.js
 - `getTotalLength()`
 - `getDistanceMatrix()`
 - `getResultsForQuery(query)`
+- `getStopwords()`
 
-The other methods in the class (whose names start with `calculate`) are intended for internal use.
+The other methods in the class (whose names start with `_calculate`) are intended for internal use.
 
 ### `Document` class
 
-- constructor
+- `constructor(text)`: used by the `Corpus` class for each of the given texts
 - `getText()`
 - `getLength()`
 - `getUniqueTerms()`
 - `getTermFrequency(term)`
 
-The other method, `calculateTermFrequencies`, is intended for internal use.
-
-### `Similarity` class
-
-- constructor: needs a `Corpus` object
-- `getDistanceMatrix()`
-
-Plus a static method, `cosineSimilarity(vector1, vector2)`, which is currently only used to calculate individual entries in the distance matrix. The other method, `calculateDistanceMatrix`, is intended for internal use.
+The other method, `_calculateTermFrequencies`, is intended for internal use.
 
 ### `Stopwords` class
 
-- constructor
+- `constructor(useDefaultStopwords = true, customStopwords = [])`: optional parameters that were used in the constructor for `Corpus`, to control whether the default stopword list should be used, and to specify any custom stopwords.
 - `includes(term)`
+- `getStopwordList()`
+
+### `Similarity` class
+
+An optional addition: once you have a `Corpus` you can use `Similarity` to calculate the pairwise similarity between the documents in the corpus, resulting in a distance matrix.
+- `constructor(corpus)`: expects an instance of `Corpus`
+- `getDistanceMatrix()`
+
+Plus a static method, `cosineSimilarity(vector1, vector2)`, which is currently only used to calculate individual entries in the distance matrix. The other method, `_calculateDistanceMatrix`, is intended for internal use.
