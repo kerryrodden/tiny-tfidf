@@ -57,7 +57,7 @@ node --experimental-modules --es-module-specifier-resolution=node test.js
 
 ### `Corpus` class
 
-This is the main class that you will use directly.
+This is the main class that you will use directly. It takes care of creating a `Document` for every text and also manages `Stopwords` for the collection. It calculates term frequencies, term weights, and term vectors, and can return results for a given query.
 - `constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75)`: `names` and `texts` are parallel arrays containing the document identifiers and the full texts of each document
 - `getTerms()`
 - `getCollectionFrequency(term)`
@@ -76,7 +76,8 @@ The other methods in the class (whose names start with `_calculate`) are intende
 
 ### `Document` class
 
-- `constructor(text)`: used by the `Corpus` class for each of the given texts
+This is used by the `Corpus` class for each of the given texts. It is independent of any stopwords or term weights (which are managed at the corpus level) and only maintains the document-level term frequencies.
+- `constructor(text)`: expects a single one of the texts passed into `Corpus`
 - `getText()`
 - `getLength()`
 - `getUniqueTerms()`
