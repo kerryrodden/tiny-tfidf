@@ -67,8 +67,6 @@ This is the main class that you will use directly. It takes care of creating a `
 - `getCollectionFrequencyWeight(term)`
 - `getDocumentVector(identifier)`
 - `getTopTermsForDocument(identifier)`
-- `getTotalLength()`
-- `getDistanceMatrix()`
 - `getResultsForQuery(query)`
 - `getStopwords()`
 
