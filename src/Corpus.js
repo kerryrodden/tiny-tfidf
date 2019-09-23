@@ -22,7 +22,6 @@ export default class Corpus {
     this._collectionFrequencies = null;
     this._collectionFrequencyWeights = null;
     this._documentVectors = null;
-    this._similarity = null;
   }
 
   // Collection frequency = how many unique documents each term appears in
@@ -147,15 +146,13 @@ export default class Corpus {
   }
 
   getSimilarityMatrix() {
-    console.warn("tiny-tfidf: Corpus.getSimilarityMatrix() is deprecated and has been replaced by Corpus.getDistanceMatrix().");
-    return this.getDistanceMatrix();
+    console.warn("tiny-tfidf: Corpus.getSimilarityMatrix() is deprecated; use Similarity.getDistanceMatrix() instead.");
+    return null;
   }
 
   getDistanceMatrix() {
-    if (!this._similarity) {
-      this._similarity = new Similarity(this);
-    }
-    return this._similarity.getDistanceMatrix();
+    console.warn("tiny-tfidf: Corpus.getDistanceMatrix() is deprecated; use Similarity.getDistanceMatrix() instead.");
+    return null;
   }
 
   findSimilarDocumentsForQuery(term) {
