@@ -25,11 +25,6 @@ export default class Document {
     });
   }
 
-  getTermFrequencies() {
-    console.warn("tiny-tfidf: Document.getTermFrequencies() is deprecated; use Document.getTermFrequency(term) instead.");
-    return null;
-  }
-
   getTermFrequency(term) {
     if (!this._termFrequencies) {
       this._calculateTermFrequencies();
@@ -49,36 +44,10 @@ export default class Document {
     return this._words.length;
   }
 
-  getAllTerms() {
-    console.warn("tiny-tfidf: Document.getAllTerms() is deprecated.");
-    return null;
-  }
-
   getUniqueTerms() {
     if (!this._termFrequencies) {
       this._calculateTermFrequencies();
     }
     return Array.from(this._termFrequencies.keys());
   }
-
-  getFrequency(term) {
-    console.warn("tiny-tfidf: Document.getFrequency() is deprecated; use Document.getTermFrequency() instead.");
-    return this.getTermFrequency(term);
-  }
-
-  setVector(vector) {
-    console.warn("tiny-tfidf: Document.setVector() is deprecated and its functionality moved to Corpus.");
-  }
-
-  getVector() {
-    console.warn("tiny-tfidf: Document.getVector() is deprecated; use Corpus.getDocumentVector() instead.");
-    return new Map();
-  }
-
-  getTopTerms(numTerms = 30) {
-    console.warn("tiny-tfidf: Document.getTopTerms() is deprecated; use Corpus.getTopTermsForDocument() instead.");
-    const sortedTerms = Array.from(this.getVector().entries()).filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
-    return sortedTerms.slice(0, numTerms);
-  }
 }
-

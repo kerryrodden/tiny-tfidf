@@ -1,5 +1,3 @@
-import Corpus from './Corpus.js';
-
 export default class Similarity {
   constructor(corpus) {
     this._corpus = corpus;
@@ -21,11 +19,6 @@ export default class Similarity {
     }
     const magnitude = Math.sqrt(ss1) * Math.sqrt(ss2);
     return magnitude ? dotProduct / magnitude : 0.0;
-  }
-
-  findSimilarDocuments(term) {
-    console.warn("tiny-tfidf: Similarity.findSimilarDocuments() is deprecated and its functionality moved to Corpus.");
-    return this._corpus.findSimilarDocumentsForQuery(term);
   }
 
   _calculateDistanceMatrix() {
@@ -52,10 +45,5 @@ export default class Similarity {
       this._calculateDistanceMatrix();
     }
     return this._distanceMatrix;
-  }
-
-  getSimilarityMatrix() {
-    console.warn("tiny-tfidf: Similarity.getSimilarityMatrix() is deprecated and has been replaced by Similarity.getDistanceMatrix().");
-    return this.getDistanceMatrix();
   }
 }

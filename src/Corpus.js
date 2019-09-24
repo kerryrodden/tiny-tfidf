@@ -46,11 +46,6 @@ export default class Corpus {
     return Array.from(this._collectionFrequencies.keys());
   }
 
-  getCollectionFrequencies() {
-    console.warn("tiny-tfidf: Corpus.getCollectionFrequencies() is deprecated and has been replaced by Corpus.getCollectionFrequency(term).");
-    return null;
-  }
-
   getCollectionFrequency(term) {
     if (!this._collectionFrequencies) {
       this._calculateCollectionFrequencies();
@@ -90,11 +85,6 @@ export default class Corpus {
     for (const [term, n] of this._collectionFrequencies.entries()) {
       this._collectionFrequencyWeights.set(term, Math.log(N + 1) - Math.log(n));
     }
-  }
-
-  getCollectionFrequencyWeights() {
-    console.warn("tiny-tfidf: Corpus.getCollectionFrequencyWeights() is deprecated and has been replaced by Corpus.getCollectionFrequencyWeight(term).");
-    return null;
   }
 
   getCollectionFrequencyWeight(term) {
@@ -147,25 +137,6 @@ export default class Corpus {
     return sortedTerms.slice(0, numTerms);
   }
 
-  getTotalLength() {
-    console.warn("tiny-tfidf: Corpus.getTotalLength() is deprecated; use Document.getLength() instead.");
-    return 0;
-  }
-
-  getSimilarityMatrix() {
-    console.warn("tiny-tfidf: Corpus.getSimilarityMatrix() is deprecated; use Similarity.getDistanceMatrix() instead.");
-    return null;
-  }
-
-  getDistanceMatrix() {
-    console.warn("tiny-tfidf: Corpus.getDistanceMatrix() is deprecated; use Similarity.getDistanceMatrix() instead.");
-    return null;
-  }
-
-  findSimilarDocumentsForQuery(term) {
-    console.warn('tiny-tfidf: Corpus.findSimilarDocumentsForQuery() has been replaced by Corpus.getResultsForQuery().');
-    return this.getResultsForQuery(term);
-  }
   // Score each document against the query string, returning a ranked list of document identifiers and scores.
   // The score for a document is the total combined weight of each query term that appears in the document.
   getResultsForQuery(query) {
