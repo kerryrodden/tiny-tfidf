@@ -1,6 +1,5 @@
 import Document from './Document.js';
 import Stopwords from './Stopwords.js';
-import Similarity from './Similarity.js';
 
 // Implements TF-IDF (Term Frequency - Inverse Document Frequency) using BM25 weighting, as described in:
 // https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-356.pdf
@@ -56,7 +55,11 @@ export default class Corpus {
     if (!this._collectionFrequencies) {
       this._calculateCollectionFrequencies();
     }
-    return this._collectionFrequencies.get(term);
+    if (this._collectionFrequencies.has(term)) {
+      return this._collectionFrequencies.get(term);
+    } else {
+      return null;
+    }
   }
 
   getDocument(identifier) {
@@ -98,7 +101,11 @@ export default class Corpus {
     if (!this._collectionFrequencyWeights) {
       this._calculateCollectionFrequencyWeights();
     }
-    return this._collectionFrequencyWeights.get(term);
+    if (this._collectionFrequencyWeights.has(term)) {
+      return this._collectionFrequencyWeights.get(term);
+    } else {
+      return null;
+    }
   }
 
   _calculateDocumentVectors() {

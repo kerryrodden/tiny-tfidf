@@ -34,7 +34,11 @@ export default class Document {
     if (!this._termFrequencies) {
       this._calculateTermFrequencies();
     }
-    return this._termFrequencies.get(term);
+    if (this._termFrequencies.has(term)) {
+      return this._termFrequencies.get(term);
+    } else {
+      return null;
+    }
   }
 
   getText() {

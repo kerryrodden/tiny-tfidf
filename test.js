@@ -11,9 +11,31 @@ const corpus = new Corpus(
 );
 
 tape('Unit tests for Corpus class', function (t) {
-  t.plan(7);
-  const n = corpus.getDocumentIdentifiers().length;
-  t.equal(n, 3);
+  t.plan(17);
+
+  t.equal(corpus.getDocumentIdentifiers().length, 3);
+
+  const terms = corpus.getTerms();
+  t.ok(terms.includes('test'));
+  t.ok(terms.includes('short'));
+  t.notOk(terms.includes('1')); // number
+  t.notOk(terms.includes('is')); // too short
+  t.notOk(terms.includes('and')); // stopword
+
+  t.equal(corpus.getCollectionFrequency('test'), 3);
+  t.equal(corpus.getCollectionFrequency('short'), 2);
+  t.equal(corpus.getCollectionFrequency('and'), null); // stopword
+
+  // 'quite' and 'short' should be the top two common terms for documents 1 & 2, because they appear in
+  // both documents and not in document 3
+  const topTwo = corpus.getCommonTerms('document1', 'document2').map(d => d[0]).slice(0, 2).sort();
+  t.ok(topTwo[0] === 'quite' && topTwo[1] === 'short');
+
+  // 'test' should have a lower weight than 'short' because it appears in more documents
+  const testWeight = corpus.getCollectionFrequencyWeight('test');
+  const shortWeight = corpus.getCollectionFrequencyWeight('short');
+  t.ok(testWeight < shortWeight);
+
   const topTerms = corpus.getTopTermsForDocument('document3');
   // Terms after stopword filtering: ['test', 'document', 'number', 'three', 'bit', 'different', 'also', 'tiny', 'longer']
   t.equal(topTerms.length, 9);
@@ -31,34 +53,44 @@ tape('Unit tests for Corpus class', function (t) {
 });
 
 tape('Unit tests for Document class', function (t) {
-  t.plan(1);
+  t.plan(4);
   const doc = corpus.getDocument('document3');
+
   const terms = doc.getUniqueTerms();
   // We have ignored short terms (<=2 characters) and stripped numbers, and have not yet applied stopword filtering
-  t.deepEqual(terms, ['test', 'document', 'number', 'three', 'bit', 'different', 'and', 'also', 'tiny', 'longer']);
+  // So unique terms are ['test', 'document', 'number', 'three', 'bit', 'different', 'and', 'also', 'tiny', 'longer']
+  t.equal(terms.length, 10);
+
+  t.equal(doc.getTermFrequency('bit'), 2);
+  t.equal(doc.getTermFrequency('and'), 1); // stopwords are still present at the document level
+  t.equal(doc.getTermFrequency('is'), null); // too short
 });
 
 tape('Unit tests for Similarity class', function (t) {
-  t.plan(1);
-  const similarity1and2 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document2'));
-  const similarity1and3 = Similarity.cosineSimilarity(corpus.getDocumentVector('document1'), corpus.getDocumentVector('document3'));
-  // The first two documents should be more similar to each other than the first and third.
-  t.ok(similarity1and2 > similarity1and3);
+  t.plan(2);
+  const similarity = new Similarity(corpus);
+  const distanceMatrix = similarity.getDistanceMatrix();
+  t.equal(distanceMatrix.identifiers.length, 3);
+  // The first two documents should be more similar to each other (i.e. less distant) than the first and third.
+  t.ok(distanceMatrix.matrix[0][1] < distanceMatrix.matrix[0][2]);
 });
 
 tape('Unit tests for Stopwords class', function (t) {
-  t.plan(3);
-  const defaultStopwords = new Stopwords();
-  const defaultStopwordsLength = defaultStopwords.getStopwordList().length;
+  t.plan(9);
   const customStopwords = ['test', 'words'];
 
   const defaultPlusCustomStopwords = new Stopwords(true, customStopwords);
-  const lengthDiff = defaultPlusCustomStopwords.getStopwordList().length - defaultStopwordsLength;
-  t.equal(lengthDiff, customStopwords.length);
+  t.ok(defaultPlusCustomStopwords.includes('test'));
+  t.ok(defaultPlusCustomStopwords.includes('words'));
+  t.ok(defaultPlusCustomStopwords.includes('the'));
 
   const emptyStopwords = new Stopwords(false, []);
-  t.equal(emptyStopwords.getStopwordList().length, 0);
+  t.notOk(emptyStopwords.includes('test'));
+  t.notOk(emptyStopwords.includes('words'));
+  t.notOk(emptyStopwords.includes('the'));
 
   const customStopwordsOnly = new Stopwords(false, customStopwords);
-  t.deepEqual(customStopwords, customStopwordsOnly.getStopwordList());
+  t.ok(customStopwordsOnly.includes('test'));
+  t.ok(customStopwordsOnly.includes('words'));
+  t.notOk(customStopwordsOnly.includes('the'));
 });
