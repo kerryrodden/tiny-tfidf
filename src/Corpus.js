@@ -67,13 +67,13 @@ export default class Corpus {
   }
 
   getDocumentIdentifiers() {
-    return [...this._documents.keys()];
+    return Array.from(this._documents.keys());
   }
 
   getCommonTerms(identifier1, identifier2, maxTerms = 10) {
     const vector1 = this.getDocumentVector(identifier1);
     const vector2 = this.getDocumentVector(identifier2);
-    const commonTerms = [...vector1.entries()].map(([term, cw]) => [term, cw * vector2.get(term)]).filter(d => d[1] > 0);
+    const commonTerms = Array.from(vector1.entries()).map(([term, cw]) => [term, cw * vector2.get(term)]).filter(d => d[1] > 0);
     return commonTerms.sort((a, b) => b[1] - a[1]).slice(0, maxTerms);
   }
 
@@ -116,7 +116,7 @@ export default class Corpus {
     const K1 = this._K1;
     const b = this._b;
     // Total length of the collection, calculated here as the sum of all document lengths
-    const totalLength = [...this._documents.values()].map(d => d.getLength()).reduce((a,b) => a + b, 0);
+    const totalLength = Array.from(this._documents.values()).map(d => d.getLength()).reduce((a,b) => a + b, 0);
     const avgLength = totalLength / this._documents.size;
     for (const [identifier, document] of this._documents) {
       const vector = new Map();
@@ -143,7 +143,7 @@ export default class Corpus {
   getTopTermsForDocument(identifier, numTerms = 30) {
     const vector = this.getDocumentVector(identifier);
     if (!vector) return [];
-    const sortedTerms = [...vector.entries()].filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
+    const sortedTerms = Array.from(vector.entries()).filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
     return sortedTerms.slice(0, numTerms);
   }
 

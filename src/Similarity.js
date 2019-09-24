@@ -7,8 +7,8 @@ export default class Similarity {
   }
 
   static cosineSimilarity(vector1, vector2) {
-    const v1 = [...vector1.values()];
-    const v2 = [...vector2.values()];
+    const v1 = Array.from(vector1.values());
+    const v2 = Array.from(vector2.values());
     let dotProduct = 0.0;
     let ss1 = 0.0;
     let ss2 = 0.0;

@@ -77,7 +77,7 @@ export default class Document {
 
   getTopTerms(numTerms = 30) {
     console.warn("tiny-tfidf: Document.getTopTerms() is deprecated; use Corpus.getTopTermsForDocument() instead.");
-    const sortedTerms = [...this.getVector().entries()].filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
+    const sortedTerms = Array.from(this.getVector().entries()).filter(d => d[1] > 0.0).sort((a, b) => b[1] - a[1]); // descending order
     return sortedTerms.slice(0, numTerms);
   }
 }
