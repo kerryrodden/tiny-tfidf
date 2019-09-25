@@ -12,7 +12,8 @@ export default class Similarity {
     let ss2 = 0.0;
     const length = Math.min(v1.length, v2.length);
     for (let i = 0; i < length; i++) {
-      if (v1[i] === 0 && v2[i] === 0) continue; // This pair of terms will not affect either the dot product or the magnitude
+       // Ignore pairs that will not affect either the dot product or the magnitude
+      if (v1[i] === 0 && v2[i] === 0) continue;
       dotProduct += v1[i] * v2[i];
       ss1 += v1[i] * v1[i];
       ss2 += v2[i] * v2[i];
@@ -25,7 +26,8 @@ export default class Similarity {
     const identifiers = this._corpus.getDocumentIdentifiers();
     const vectors = identifiers.map(d => this._corpus.getDocumentVector(d));
 
-    // Calculate the distance between each pair of documents. Distance is 1.0 - similarity (so 0 = identical)
+    // Calculate the distance between each pair of documents.
+    // Distance is 1.0 - similarity (so 0 = identical)
     const matrix = new Array(vectors.length).fill(null).map(() => new Array(vectors.length));
     for (let i = 0; i < vectors.length; i++) {
       for (let j = i; j < vectors.length; j++) {
