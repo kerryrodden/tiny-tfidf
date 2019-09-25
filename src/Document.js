@@ -6,7 +6,7 @@ export default class Document {
       .filter(word => {
         // Exclude very short terms and terms that start with a number
         // Stopwords are dealt with by the Corpus class
-        if (word.length <= 2 || word.match(/^\d/)) {
+        if (word.length < 2 || word.match(/^\d/)) {
           return false;
         } else {
           return true;

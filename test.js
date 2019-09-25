@@ -19,7 +19,7 @@ tape('Unit tests for Corpus class', function (t) {
   t.ok(terms.includes('test'));
   t.ok(terms.includes('short'));
   t.notOk(terms.includes('1')); // number
-  t.notOk(terms.includes('is')); // too short
+  t.notOk(terms.includes('a')); // too short
   t.notOk(terms.includes('and')); // stopword
 
   t.equal(corpus.getCollectionFrequency('test'), 3);
@@ -57,13 +57,13 @@ tape('Unit tests for Document class', function (t) {
   const doc = corpus.getDocument('document3');
 
   const terms = doc.getUniqueTerms();
-  // We have ignored short terms (<=2 characters) and stripped numbers, and have not yet applied stopword filtering
-  // So unique terms are ['test', 'document', 'number', 'three', 'bit', 'different', 'and', 'also', 'tiny', 'longer']
-  t.equal(terms.length, 10);
+  // We have ignored short terms (<2 characters) and stripped numbers, and have not yet applied stopword filtering
+  // So unique terms are ['test', 'document', 'number', 'three', 'is', 'bit', 'different', 'and', 'also', 'tiny', 'longer']
+  t.equal(terms.length, 11);
 
   t.equal(doc.getTermFrequency('bit'), 2);
   t.equal(doc.getTermFrequency('and'), 1); // stopwords are still present at the document level
-  t.equal(doc.getTermFrequency('is'), null); // too short
+  t.equal(doc.getTermFrequency('a'), null); // too short
 });
 
 tape('Unit tests for Similarity class', function (t) {
