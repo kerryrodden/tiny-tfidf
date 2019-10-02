@@ -31,11 +31,10 @@ export default class Similarity {
     return magnitude ? dotProduct / magnitude : 0.0;
   }
 
+  // Internal method to calculate the distance between each pair of documents in the corpus
   _calculateDistanceMatrix() {
     const identifiers = this._corpus.getDocumentIdentifiers();
     const vectors = identifiers.map(d => this._corpus.getDocumentVector(d));
-
-    // Calculate the distance between each pair of documents
     const matrix = new Array(vectors.length).fill(null).map(() => new Array(vectors.length));
     for (let i = 0; i < vectors.length; i++) {
       for (let j = i; j < vectors.length; j++) {

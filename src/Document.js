@@ -22,6 +22,7 @@ export default class Document {
     this._termFrequencies = null;
   }
 
+  // Internal method to count how often each term appears in this document
   _calculateTermFrequencies() {
     this._termFrequencies = new Map();
     this._words.forEach(word => {
