@@ -28,6 +28,7 @@ export default class Corpus {
     this._documentVectors = null;
   }
 
+  // Internal method that determines how many documents in the collection contain each term
   _calculateCollectionFrequencies() {
     this._collectionFrequencies = new Map();
     for (const document of this._documents.values()) {
@@ -116,6 +117,8 @@ export default class Corpus {
     }
   }
 
+  // Internal method that creates, for each document, a Map from each term to its corresponding
+  // combined (TF-IDF) weight for that document
   _calculateDocumentVectors() {
     if (!this._collectionFrequencyWeights) {
       this._calculateCollectionFrequencyWeights();
@@ -132,11 +135,9 @@ export default class Corpus {
       const vector = new Map();
       const ndl = document.getLength() / avgLength;
       for (const [term, idf] of this._collectionFrequencyWeights.entries()) {
-        let cw = 0.0;
+        // Calculate the combined weight (a.k.a. TF-IDF weight) for this term in this document
         const tf = document.getTermFrequency(term);
-        if (tf) {
-          cw = (idf * tf * (K1 + 1)) / (K1 * (1 - b + b * ndl) + tf);
-        }
+        const cw = tf ? (idf * tf * (K1 + 1)) / (K1 * (1 - b + b * ndl) + tf) : 0.0;
         vector.set(term, cw);
       }
       this._documentVectors.set(identifier, vector);

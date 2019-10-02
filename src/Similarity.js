@@ -11,6 +11,8 @@ export default class Similarity {
 
   // Calculates the similarity between a pair of document vectors (as the cosine of the angle
   // between them): https://en.wikipedia.org/wiki/Cosine_similarity
+  // Each vector is represented as an ES6 Map from each term to its combined (TF-IDF) weight
+  // for the corresponding document.
   static cosineSimilarity(vector1, vector2) {
     const v1 = Array.from(vector1.values());
     const v2 = Array.from(vector2.values());
