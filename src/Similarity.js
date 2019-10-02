@@ -1,7 +1,5 @@
-/**
- * For calculating the pairwise similarity between documents in the corpus, in particular to create
- * a distance matrix (distance = 1 - similarity).
- */
+// For calculating the pairwise similarity between documents in the corpus, in particular to create
+// a distance matrix (distance = 1 - similarity).
 export default class Similarity {
 
   // Expects an instance of Corpus
@@ -11,10 +9,8 @@ export default class Similarity {
     this._distanceMatrix = null;
   }
 
-  /**
-   * Calculates the similarity between a pair of document vectors (as the cosine of the angle
-   * between them): https://en.wikipedia.org/wiki/Cosine_similarity
-   */
+  // Calculates the similarity between a pair of document vectors (as the cosine of the angle
+  // between them): https://en.wikipedia.org/wiki/Cosine_similarity
   static cosineSimilarity(vector1, vector2) {
     const v1 = Array.from(vector1.values());
     const v2 = Array.from(vector2.values());
@@ -53,11 +49,9 @@ export default class Similarity {
     this._distanceMatrix = { identifiers, matrix };
   }
 
-  /**
-   * Returns an object with properties "identifiers" (an array of identifiers for the items in the
-   * matrix) and "matrix" (an array of arrays, where the values represent distances between items).
-   * Distance is 1.0 - similarity (so 0 = identical)
-   */
+  // Returns an object with properties "identifiers" (an array of identifiers for the items in the
+  // matrix) and "matrix" (an array of arrays, where the values represent distances between items).
+  // Distance is 1.0 - similarity (so 0 = identical)
   getDistanceMatrix() {
     if (!this._distanceMatrix) {
       this._calculateDistanceMatrix();

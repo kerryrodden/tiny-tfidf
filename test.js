@@ -26,8 +26,8 @@ tape('Unit tests for Corpus class', function (t) {
   t.equal(corpus.getCollectionFrequency('short'), 2);
   t.equal(corpus.getCollectionFrequency('and'), null); // stopword
 
-  // 'quite' and 'short' should be the top two common terms for documents 1 & 2, because they appear in
-  // both documents and not in document 3
+  // 'quite' and 'short' should be the top two common terms for documents 1 & 2, because they
+  // appear in both documents and not in document 3
   const topTwo = corpus.getCommonTerms('document1', 'document2').map(d => d[0]).slice(0, 2).sort();
   t.ok(topTwo[0] === 'quite' && topTwo[1] === 'short');
 
@@ -37,9 +37,10 @@ tape('Unit tests for Corpus class', function (t) {
   t.ok(testWeight < shortWeight);
 
   const topTerms = corpus.getTopTermsForDocument('document3');
-  // Terms after stopword filtering: ['test', 'document', 'number', 'three', 'bit', 'different', 'also', 'tiny', 'longer']
+  // Terms after stopword filtering: ['test', 'document', 'number', 'three', 'bit', 'different',
+  // 'also', 'tiny', 'longer']
   t.equal(topTerms.length, 9);
-  // 'bit' should have the highest weight, because it appears twice in document 3 and only in that document
+  // 'bit' should have the highest weight, because it appears twice in document 3 and only there
   t.equal(topTerms[0][0], 'bit');
 
   const queryResults = corpus.getResultsForQuery('a bit of a test query');
@@ -57,8 +58,9 @@ tape('Unit tests for Document class', function (t) {
   const doc = corpus.getDocument('document3');
 
   const terms = doc.getUniqueTerms();
-  // We have ignored short terms (<2 characters) and stripped numbers, and have not yet applied stopword filtering
-  // So unique terms are ['test', 'document', 'number', 'three', 'is', 'bit', 'different', 'and', 'also', 'tiny', 'longer']
+  // We have ignored short terms (<2 characters) and stripped numbers, and have not yet applied
+  // stopword filtering. So unique terms are ['test', 'document', 'number', 'three', 'is', 'bit',
+  // 'different', 'and', 'also', 'tiny', 'longer']
   t.equal(terms.length, 11);
 
   t.equal(doc.getTermFrequency('bit'), 2);
@@ -71,7 +73,8 @@ tape('Unit tests for Similarity class', function (t) {
   const similarity = new Similarity(corpus);
   const distanceMatrix = similarity.getDistanceMatrix();
   t.equal(distanceMatrix.identifiers.length, 3);
-  // The first two documents should be more similar to each other (i.e. less distant) than the first and third.
+  // The first two documents should be more similar to each other (i.e. less distant) than the
+  // first and third.
   t.ok(distanceMatrix.matrix[0][1] < distanceMatrix.matrix[0][2]);
 });
 
