@@ -23,7 +23,7 @@ export default class Similarity {
     let ss2 = 0.0;
     const length = Math.min(v1.length, v2.length);
     for (let i = 0; i < length; i++) {
-       // Ignore pairs that will not affect either the dot product or the magnitude
+      // Ignore pairs that will not affect either the dot product or the magnitude
       if (v1[i] === 0 && v2[i] === 0) continue;
       dotProduct += v1[i] * v2[i];
       ss1 += v1[i] * v1[i];

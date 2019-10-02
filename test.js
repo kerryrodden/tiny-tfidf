@@ -48,7 +48,7 @@ tape('Unit tests for Corpus class', function (t) {
   // Document 3 should be the highest ranked (because of the term 'bit')
   t.equal(queryResults[0][0], 'document3');
   // We should guard against a query that is empty or is not a string
-  t.equal(corpus.getResultsForQuery("").length, 0);
+  t.equal(corpus.getResultsForQuery('').length, 0);
   t.equal(corpus.getResultsForQuery(2).length, 0);
 });
 
