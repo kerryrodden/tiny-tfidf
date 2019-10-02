@@ -1,7 +1,7 @@
 # tiny-tfidf
 ![npm](https://img.shields.io/npm/v/tiny-tfidf.svg)
 
-Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity). The goal is to create something simple that can be used to explain or experiment with the techniques, using a small set of documents. Everything is done in memory so this library is not suitable for large-scale use.
+Minimal implementations of a couple of classic text analysis tools (TF-IDF and cosine similarity). Everything is done in memory so this library is not suitable for large-scale use. Instead, the goal is to create something simple that can be used to explain or experiment with the techniques, using a small set of documents. For a detailed and interactive explanation, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
 
 The term weighting scheme is BM25, as described in this [technical report](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-356.pdf) by Stephen Robertson and Karen Spärck Jones.
 
@@ -43,6 +43,8 @@ console.log(corpus.getTopTermsForDocument("document3"));
   [ 'document', 0.2721316901570901 ]
 ]
 ```
+
+For many more usage examples, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
 
 ### With Node.js
 
