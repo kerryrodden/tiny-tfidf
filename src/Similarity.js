@@ -1,9 +1,20 @@
+/**
+ * For calculating the pairwise similarity between documents in the corpus, in particular to create
+ * a distance matrix (distance = 1 - similarity).
+ */
 export default class Similarity {
+
+  // Expects an instance of Corpus
   constructor(corpus) {
     this._corpus = corpus;
-    this._distanceMatrix = null; // this is expensive to calculate so only do it when needed
+    // This is expensive to calculate so only do it on request
+    this._distanceMatrix = null;
   }
 
+  /**
+   * Calculates the similarity between a pair of document vectors (as the cosine of the angle
+   * between them): https://en.wikipedia.org/wiki/Cosine_similarity
+   */
   static cosineSimilarity(vector1, vector2) {
     const v1 = Array.from(vector1.values());
     const v2 = Array.from(vector2.values());
@@ -26,13 +37,13 @@ export default class Similarity {
     const identifiers = this._corpus.getDocumentIdentifiers();
     const vectors = identifiers.map(d => this._corpus.getDocumentVector(d));
 
-    // Calculate the distance between each pair of documents.
-    // Distance is 1.0 - similarity (so 0 = identical)
+    // Calculate the distance between each pair of documents
     const matrix = new Array(vectors.length).fill(null).map(() => new Array(vectors.length));
     for (let i = 0; i < vectors.length; i++) {
       for (let j = i; j < vectors.length; j++) {
         if (i === j) {
-          matrix[i][j] = 0.0; // a document is identical to itself
+          // A document is identical to itself
+          matrix[i][j] = 0.0;
         } else {
           matrix[i][j] = 1.0 - Similarity.cosineSimilarity(vectors[i], vectors[j]);
           matrix[j][i] = matrix[i][j]; // the matrix is symmetric
@@ -42,6 +53,11 @@ export default class Similarity {
     this._distanceMatrix = { identifiers, matrix };
   }
 
+  /**
+   * Returns an object with properties "identifiers" (an array of identifiers for the items in the
+   * matrix) and "matrix" (an array of arrays, where the values represent distances between items).
+   * Distance is 1.0 - similarity (so 0 = identical)
+   */
   getDistanceMatrix() {
     if (!this._distanceMatrix) {
       this._calculateDistanceMatrix();

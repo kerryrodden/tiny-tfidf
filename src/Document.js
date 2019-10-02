@@ -1,11 +1,20 @@
+/**
+ * This is used by the Corpus class for each of the given texts. It is independent of any stopword
+ * list or term weights (which are managed at the corpus level) and only maintains the
+ * document-level term frequencies. Terms can contain only letters or numbers; they are filtered
+ * out if they contain only 1 character or if they start with a number.
+ */
 export default class Document {
+  // Expects a single one of the texts originally passed into Corpus
   constructor(text) {
     this._text = text;
     this._words = text
       .match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g)
       .filter(word => {
-        // Exclude very short terms and terms that start with a number
-        // Stopwords are dealt with by the Corpus class
+        /**
+         * Exclude very short terms and terms that start with a number
+         * (stopwords are dealt with by the Corpus class)
+         */
         if (word.length < 2 || word.match(/^\d/)) {
           return false;
         } else {
@@ -27,6 +36,7 @@ export default class Document {
     });
   }
 
+  // Returns a count of how often the given term appears in this document
   getTermFrequency(term) {
     if (!this._termFrequencies) {
       this._calculateTermFrequencies();
@@ -38,14 +48,17 @@ export default class Document {
     }
   }
 
+  // Returns a string containing the full text of this document (e.g. for display)
   getText() {
     return this._text;
   }
 
+  // Returns the total number of terms in the document (including stopwords)
   getLength() {
     return this._words.length;
   }
 
+  // Returns an array of the unique terms that appear in the document (including stopwords)
   getUniqueTerms() {
     if (!this._termFrequencies) {
       this._calculateTermFrequencies();

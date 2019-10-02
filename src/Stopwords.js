@@ -1,5 +1,7 @@
-// English stopwords, assuming tokenization has occurred and 1-letter tokens are already filtered
-// out. Based on list from NLTK found at https://gist.github.com/sebleier/554280
+/**
+ * English stopwords, assuming that 1-letter tokens are already filtered out. Based on the list
+ * from NLTK, found via https://gist.github.com/sebleier/554280
+ */
 const defaultStopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your',
   'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers',
   'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what',
@@ -16,17 +18,23 @@ const defaultStopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves'
 
 export default class Stopwords {
 
+  /**
+   * "useDefaultStopwords" and "customStopwords" are optional parameters, as specified in the
+   * constructor for Corpus, which control whether the default stopword list should be used, and to
+   * specify any custom stopwords. If the default stopword list is to be used, any custom stopwords
+   * are added to that list; if not, the custom stopwords are used instead of the default list.
+   */
   constructor(useDefaultStopwords = true, customStopwords = []) {
     const stopwords = useDefaultStopwords ? customStopwords.concat(defaultStopwords) : customStopwords;
     this._stopwords = new Map(stopwords.map(d => [d, true]));
   }
 
-  // Test whether a word is a stopword
+  // Returns true if the current stopword list contains the given term, or false otherwise
   includes(word) {
     return this._stopwords.has(word);
   }
 
-  // Get the full list of stopwords currently in use (for inspection or debugging)
+  // Returns an array of the stopword list currently in use (for inspection or debugging)
   getStopwordList() {
     return Array.from(this._stopwords.keys());
   }
