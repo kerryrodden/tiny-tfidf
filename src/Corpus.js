@@ -138,13 +138,13 @@ export default class Corpus {
     return this._documentVectors.get(identifier);
   }
 
-  getTopTermsForDocument(identifier, numTerms = 30) {
+  getTopTermsForDocument(identifier, maxTerms = 30) {
     const vector = this.getDocumentVector(identifier);
     if (!vector) return [];
     const sortedTerms = Array.from(vector.entries())
       .filter(d => d[1] > 0.0)
       .sort((a, b) => b[1] - a[1]); // descending order
-    return sortedTerms.slice(0, numTerms);
+    return sortedTerms.slice(0, maxTerms);
   }
 
   // Score each document against the query string, returning a ranked list of document identifiers
