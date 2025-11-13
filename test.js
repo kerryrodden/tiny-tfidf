@@ -172,7 +172,7 @@ tape('Unit tests for empty string documents (Issue #5)', function (t) {
 });
 
 tape('Unit tests for addDocument() method (Issue #4)', function (t) {
-  t.plan(10);
+  t.plan(16);
 
   // Create initial corpus with 2 documents
   const corpus = new Corpus(['doc1', 'doc2'], ['This is a test', 'Another test document']);
@@ -204,6 +204,22 @@ tape('Unit tests for addDocument() method (Issue #4)', function (t) {
   const duplicate = corpus.addDocument('doc3', 'Different text');
   t.notOk(duplicate, 'addDocument should return false for duplicate identifier');
   t.equal(corpus.getDocumentIdentifiers().length, 3, 'Corpus should still have 3 documents');
+
+  // Test starting with empty corpus and building incrementally
+  const emptyCorpus = new Corpus([], []);
+  t.equal(emptyCorpus.getDocumentIdentifiers().length, 0, 'Empty corpus should have 0 documents');
+  t.equal(emptyCorpus.getTerms().length, 0, 'Empty corpus should have 0 terms');
+
+  emptyCorpus.addDocument('first', 'This is the first document');
+  emptyCorpus.addDocument('second', 'This is the second document with more words');
+  t.equal(emptyCorpus.getDocumentIdentifiers().length, 2, 'Should have 2 documents after adding');
+
+  const emptyCorpusTerms = emptyCorpus.getTerms();
+  t.ok(emptyCorpusTerms.length > 0, 'Should have terms after adding documents');
+  t.ok(emptyCorpusTerms.includes('first') || emptyCorpusTerms.includes('second'), 'Should include terms from added documents');
+
+  const topTermsFirst = emptyCorpus.getTopTermsForDocument('first');
+  t.ok(topTermsFirst.length > 0, 'Should be able to get top terms from incrementally built corpus');
 });
 
 tape('Unit tests for tokenization (Issue #3)', function (t) {
