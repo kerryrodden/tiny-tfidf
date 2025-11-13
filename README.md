@@ -59,16 +59,6 @@ const corpus = new Corpus(
 
 For many more usage examples, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
 
-### With Node.js
-
-Disclaimer: this is an ES6 module and is mostly intended for use in the browser, rather than with Node.js ([more background on ES6 modules and Node](https://github.com/nodejs/modules/blob/master/doc/announcement.md#es-module-code-in-packages)).
-
-Example with Node v12.6.0+ :
-
-```sh
-node --experimental-modules --es-module-specifier-resolution=node test.js
-```
-
 ### In the browser
 
 For browser usage, UMD bundles are available in the `dist/` folder (after running `npm run build`):

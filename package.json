@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --experimental-modules --es-module-specifier-resolution=node test.js",
+    "test": "node test.js",
     "build": "rollup -c"
   },
   "repository": {
