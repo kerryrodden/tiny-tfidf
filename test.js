@@ -101,6 +101,52 @@ tape('Unit tests for Stopwords class', function (t) {
   t.notOk(customStopwordsOnly.includes('the'));
 });
 
+tape('Unit tests for new options API and backward compatibility', function (t) {
+  t.plan(11);
+
+  const names = ['doc1', 'doc2'];
+  const texts = ['This is a test', 'Another test document'];
+
+  // Test new options object API
+  const corpus1 = new Corpus(names, texts, {
+    useDefaultStopwords: true,
+    customStopwords: ['test'],
+    K1: 1.5,
+    b: 0.5
+  });
+  t.ok(corpus1, 'Corpus created with new options API');
+  t.notOk(corpus1.getTerms().includes('test'), 'Custom stopword "test" should be filtered');
+
+  // Test new API with partial options (relying on defaults)
+  const corpus2 = new Corpus(names, texts, { customStopwords: ['document'] });
+  t.ok(corpus2, 'Corpus created with partial options');
+  t.notOk(corpus2.getTerms().includes('document'), 'Custom stopword "document" should be filtered');
+
+  // Test new API with empty options (all defaults)
+  const corpus3 = new Corpus(names, texts);
+  t.ok(corpus3, 'Corpus created with default options');
+  t.ok(corpus3.getTerms().includes('test'), 'Default stopwords should be used');
+
+  // Test backward compatibility with v0.9 API
+  const corpus4 = new Corpus(names, texts, true, ['test'], 1.5, 0.5);
+  t.ok(corpus4, 'Corpus created with v0.9 API signature');
+  t.notOk(corpus4.getTerms().includes('test'), 'v0.9 API custom stopword should work');
+
+  // Test backward compatibility with partial v0.9 parameters
+  const corpus5 = new Corpus(names, texts, false);
+  t.ok(corpus5, 'Corpus created with partial v0.9 API');
+  t.ok(corpus5.getTerms().includes('is'), 'No default stopwords should be used');
+
+  // Verify both APIs produce equivalent results
+  const corpus6a = new Corpus(names, texts, true, ['custom'], 2.0, 0.75);
+  const corpus6b = new Corpus(names, texts, { useDefaultStopwords: true, customStopwords: ['custom'], K1: 2.0, b: 0.75 });
+  t.equal(
+    corpus6a.getTerms().length,
+    corpus6b.getTerms().length,
+    'Old and new API should produce equivalent results'
+  );
+});
+
 tape('Unit tests for empty string documents (Issue #5)', function (t) {
   t.plan(6);
 
