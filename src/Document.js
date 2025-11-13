@@ -10,18 +10,18 @@ export default class Document {
     this._text = text;
     const matches = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ0-9]+/g);
     this._words = (matches || [])
+      .map(word => word.toLowerCase())
       .filter(word => {
-        // Exclude single-letter terms except 'i' and 'a' (which are added to default stopwords)
+        // Exclude single-letter terms except 'i' and 'a' (which are in default stopwords)
         // Also exclude pure numeric tokens (e.g., "123" but not "2nd")
-        if (word.length < 2 && !['i', 'a'].includes(word.toLowerCase())) {
+        if (word.length < 2 && !['i', 'a'].includes(word)) {
           return false;
         }
         if (word.match(/^\d+$/)) {
           return false;
         }
         return true;
-      })
-      .map(word => word.toLowerCase());
+      });
     this._termFrequencies = null;
   }
 
