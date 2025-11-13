@@ -8,8 +8,8 @@ export default class Document {
   // Expects a single one of the texts originally passed into Corpus
   constructor(text) {
     this._text = text;
-    this._words = text
-      .match(/[a-zA-ZÀ-ÖØ-öø-ÿ0-9]+/g)
+    const matches = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ0-9]+/g);
+    this._words = (matches || [])
       .filter(word => {
         // Exclude single-letter terms except 'i' and 'a' (which are added to default stopwords)
         // Also exclude pure numeric tokens (e.g., "123" but not "2nd")

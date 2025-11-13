@@ -101,6 +101,30 @@ tape('Unit tests for Stopwords class', function (t) {
   t.notOk(customStopwordsOnly.includes('the'));
 });
 
+tape('Unit tests for empty string documents (Issue #5)', function (t) {
+  t.plan(6);
+
+  // Test that corpus can be created with empty string documents
+  const corpus = new Corpus(['doc1', 'doc2', 'doc3'], ['This is a test', '', 'Another document']);
+  t.equal(corpus.getDocumentIdentifiers().length, 3, 'Corpus should have 3 documents');
+
+  // Test that empty document has no terms
+  const emptyDoc = corpus.getDocument('doc2');
+  t.equal(emptyDoc.getUniqueTerms().length, 0, 'Empty document should have no terms');
+  t.equal(emptyDoc.getLength(), 0, 'Empty document should have length 0');
+
+  // Test that corpus operations work with empty documents
+  const corpusTerms = corpus.getTerms();
+  t.ok(corpusTerms.includes('test'), 'Corpus should still include terms from non-empty documents');
+
+  const topTerms = corpus.getTopTermsForDocument('doc2');
+  t.equal(topTerms.length, 0, 'Empty document should have no top terms');
+
+  // Test that queries work with empty documents in corpus
+  const queryResults = corpus.getResultsForQuery('test');
+  t.ok(queryResults.length > 0, 'Queries should work with empty documents in corpus');
+});
+
 tape('Unit tests for tokenization (Issue #3)', function (t) {
   t.plan(7);
 
