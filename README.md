@@ -13,8 +13,6 @@ I am open to adding either if there's a tiny way to do it!
 
 ## Usage
 
-Note: I'm still actively developing this code (and documentation), and the API is likely to change/evolve up until version 1.0.
-
 ```js
 import { Corpus } from "tiny-tfidf";
 
@@ -44,23 +42,78 @@ console.log(corpus.getTopTermsForDocument("document3"));
 ]
 ```
 
+### With options (v1.0+)
+
+```js
+const corpus = new Corpus(
+  ["document1", "document2"],
+  ["First document text", "Second document text"],
+  {
+    useDefaultStopwords: true,
+    customStopwords: ['custom', 'words'],
+    K1: 2.0,
+    b: 0.75
+  }
+);
+```
+
+### Adding documents dynamically
+
+```js
+// Add a new document to an existing corpus
+corpus.addDocument("document4", "This is a new document that was added later");
+
+// The corpus automatically recalculates TF-IDF scores
+console.log(corpus.getTopTermsForDocument("document4"));
+```
+
 For many more usage examples, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
 
-### With Node.js
+### In the browser
 
-Disclaimer: this is an ES6 module and is mostly intended for use in the browser, rather than with Node.js ([more background on ES6 modules and Node](https://github.com/nodejs/modules/blob/master/doc/announcement.md#es-module-code-in-packages)).
+For browser usage without a bundler, UMD bundles are available in the `dist/` folder (after running `npm run build`):
 
-Example with Node v12.6.0 :
-
-```sh
-node --experimental-modules --es-module-specifier-resolution=node test.js
+```html
+<script src="dist/tiny-tfidf.min.js"></script>
+<script>
+  const corpus = new TinyTFIDF.Corpus(
+    ["doc1", "doc2"],
+    ["First document", "Second document"]
+  );
+  console.log(corpus.getTerms());
+</script>
 ```
-## API (v0.9)
+
+## Migration from v0.9 to v1.0
+
+The main change is that the `Corpus` constructor now accepts an optional options object as the third parameter, which is cleaner and more extensible. However, the v0.9 API is still supported for backward compatibility.
+
+**Old API (still works):**
+```js
+new Corpus(names, texts, useDefaultStopwords, customStopwords, K1, b)
+```
+
+**New API (recommended):**
+```js
+new Corpus(names, texts, { useDefaultStopwords, customStopwords, K1, b })
+```
+
+Other changes:
+- Tokenization now preserves alphanumeric terms like "2nd" (previously became "nd")
+- Empty string documents are now handled gracefully
+- New method: `addDocument(identifier, text)` for dynamic corpus growth
+
+## API (v1.0)
 
 ### `Corpus` class
 
 This is the main class that you will use directly. It takes care of creating a `Document` for every text and also manages `Stopwords` for the collection. It calculates term frequencies, term weights, and term vectors, and can return results for a given query.
-- `constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75)`: `names` and `texts` are parallel arrays containing the document identifiers and the full texts of each document; `useDefaultStopwords` and `customStopwords` are optional parameters that are passed along to the `Stopwords` instance (see below); `K1` and `b` are optional tuning parameters for term weighting that are explained in the reference [technical report](https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-356.pdf)
+- `constructor(names, texts, options = {})`: `names` and `texts` are parallel arrays containing the document identifiers and the full texts of each document; `options` is an optional object with properties:
+  - `useDefaultStopwords` (default: `true`) - whether to use the built-in stopword list
+  - `customStopwords` (default: `[]`) - additional stopwords to add or use exclusively
+  - `K1` (default: `2.0`) - BM25 term frequency tuning constant (higher values increase influence)
+  - `b` (default: `0.75`) - BM25 document length tuning constant (0-1 range; 1 = repetitive docs, 0 = multitopic docs)
+  - Note: The v0.9 signature `constructor(names, texts, useDefaultStopwords, customStopwords, K1, b)` is still supported for backward compatibility
 - `getTerms()`: returns an array containing the unique terms used in the corpus (excluding stopwords)
 - `getCollectionFrequency(term)`: returns the number of documents in the collection that contain the given term
 - `getDocument(identifier)`: returns the `Document` object for the given `identifier`
@@ -71,12 +124,13 @@ This is the main class that you will use directly. It takes care of creating a `
 - `getTopTermsForDocument(identifier, maxTerms = 30)`: returns an array containing the terms with the highest combined (TF-IDF) weights for the document with the given `identifier`; each array entry is a pair of a term and a weight, and the array is sorted in descending order by the weight, with a maximum length of `maxTerms` (which is optional and defaults to 30)
 - `getResultsForQuery(query)`: returns an array representing the highest scoring documents for the given `query`; each array entry is a pair of a document identifier and a score, and the array is sorted in descending order by the score. The score for a document is the total combined weight of each query term that appears in the document.
 - `getStopwords()`: returns the `Stopwords` instance that is being used by this corpus (for inspection or debugging)
+- `addDocument(identifier, text)`: dynamically adds a new document to the corpus; returns `true` if successful, `false` if the identifier already exists. All cached calculations are automatically invalidated and recalculated on next access.
 
 The other methods in the class (whose names start with `_calculate`) are intended for internal use.
 
 ### `Document` class
 
-This is used by the `Corpus` class for each of the given texts. It is independent of any stopword list or term weights (which are managed at the corpus level) and only maintains the document-level term frequencies. Terms can contain only letters or numbers; they are filtered out if they contain only 1 character or if they start with a number.
+This is used by the `Corpus` class for each of the given texts. It is independent of any stopword list or term weights (which are managed at the corpus level) and only maintains the document-level term frequencies. Terms can contain letters and numbers (e.g., "2nd"). Single letters are filtered out except for 'i' and 'a' (which are handled as stopwords at the corpus level). Pure numeric tokens (e.g., "123") are also filtered out.
 - `constructor(text)`: expects a single one of the texts originally passed into `Corpus`
 - `getTermFrequency(term)`: returns a count of how often the given term appears in this document
 - `getText()`: returns a string containing the full text of this document (e.g. for display)

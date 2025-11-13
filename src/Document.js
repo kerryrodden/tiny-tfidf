@@ -1,24 +1,27 @@
 // This is used by the Corpus class for each of the given texts. It is independent of any stopword
 // list or term weights (which are managed at the corpus level) and only maintains the
-// document-level term frequencies. Terms can contain only letters or numbers; they are filtered
-// out if they contain only 1 character or if they start with a number.
+// document-level term frequencies. Terms can contain letters and numbers (e.g., "2nd"). Single
+// letters are filtered out except for 'i' and 'a' (which are handled as stopwords at the corpus
+// level). Pure numeric tokens (e.g., "123") are also filtered out.
 export default class Document {
 
   // Expects a single one of the texts originally passed into Corpus
   constructor(text) {
     this._text = text;
-    this._words = text
-      .match(/[a-zA-ZÀ-ÖØ-öø-ÿ]+/g)
+    const matches = text.match(/[a-zA-ZÀ-ÖØ-öø-ÿ0-9]+/g);
+    this._words = (matches || [])
+      .map(word => word.toLowerCase())
       .filter(word => {
-        // Exclude very short terms and terms that start with a number
-        // (stopwords are dealt with by the Corpus class)
-        if (word.length < 2 || word.match(/^\d/)) {
+        // Exclude single-letter terms except 'i' and 'a' (which are in default stopwords)
+        // Also exclude pure numeric tokens (e.g., "123" but not "2nd")
+        if (word.length < 2 && !['i', 'a'].includes(word)) {
           return false;
-        } else {
-          return true;
         }
-      })
-      .map(word => word.toLowerCase());
+        if (word.match(/^\d+$/)) {
+          return false;
+        }
+        return true;
+      });
     this._termFrequencies = null;
   }
 

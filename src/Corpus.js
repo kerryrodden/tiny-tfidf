@@ -9,13 +9,32 @@ export default class Corpus {
 
   // - "names" and "texts" are parallel arrays containing the document identifiers and the full
   //   texts of each document
-  // - "useDefaultStopwords" and "customStopwords" are optional parameters that are passed along to
-  //   the Stopwords instance
-  // - K1 and b are tuning constants from the reference technical report:
-  //   - K1 modifies term frequency (higher values increase the influence)
-  //   - b modifies document length (between 0 and 1; 1 means that long documents are repetitive and
-  //     0 means they are multitopic)
-  constructor(names, texts, useDefaultStopwords = true, customStopwords = [], K1 = 2.0, b = 0.75) {
+  // - "options" is an optional object with the following properties:
+  //   - useDefaultStopwords: boolean (default: true) - whether to use the built-in stopword list
+  //   - customStopwords: array (default: []) - additional stopwords to add
+  //   - K1: number (default: 2.0) - BM25 term frequency tuning constant (higher values increase influence)
+  //   - b: number (default: 0.75) - BM25 document length tuning constant (0-1 range; 1 = repetitive, 0 = multitopic)
+  //
+  // For backward compatibility with v0.9, the old signature is still supported:
+  //   constructor(names, texts, useDefaultStopwords, customStopwords, K1, b)
+  constructor(names, texts, options = {}) {
+    // Backward compatibility: detect old v0.9 API usage (third parameter is boolean)
+    if (typeof options === 'boolean') {
+      const useDefaultStopwords = options;
+      const customStopwords = arguments[3] || [];
+      const K1 = arguments[4] || 2.0;
+      const b = arguments[5] || 0.75;
+      options = { useDefaultStopwords, customStopwords, K1, b };
+    }
+
+    // Destructure options with defaults
+    const {
+      useDefaultStopwords = true,
+      customStopwords = [],
+      K1 = 2.0,
+      b = 0.75
+    } = options;
+
     this._stopwords = new Stopwords(useDefaultStopwords, customStopwords);
     this._K1 = K1;
     this._b = b;
@@ -191,5 +210,23 @@ export default class Corpus {
   // Returns the Stopwords instance that is being used by this corpus (for inspection or debugging)
   getStopwords() {
     return this._stopwords;
+  }
+
+  // Adds a new document to the corpus dynamically. This is useful when the document repository
+  // grows over time. After adding the document, all cached calculations (collection frequencies,
+  // weights, and vectors) are invalidated and will be recalculated on next access.
+  // - identifier: unique identifier for the new document
+  // - text: the full text content of the document
+  // Returns true if the document was added, false if the identifier already exists
+  addDocument(identifier, text) {
+    if (this._documents.has(identifier)) {
+      return false;
+    }
+    this._documents.set(identifier, new Document(text));
+    // Invalidate cached calculations so they'll be recalculated with the new document
+    this._collectionFrequencies = null;
+    this._collectionFrequencyWeights = null;
+    this._documentVectors = null;
+    return true;
   }
 }

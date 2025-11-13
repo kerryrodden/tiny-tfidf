@@ -1,6 +1,6 @@
-// English stopwords, assuming that 1-letter tokens are already filtered out. Based on the list
-// from NLTK, found via https://gist.github.com/sebleier/554280
-const defaultStopwords = ['me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your',
+// English stopwords, based on the list from NLTK (found via https://gist.github.com/sebleier/554280)
+// with single-letter stopwords filtered out except 'a' and 'i'
+const defaultStopwords = ['i', 'a', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', 'your',
   'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', 'her', 'hers',
   'herself', 'it', 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what',
   'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be',
