@@ -57,25 +57,21 @@ const corpus = new Corpus(
 );
 ```
 
+### Adding documents dynamically
+
+```js
+// Add a new document to an existing corpus
+corpus.addDocument("document4", "This is a new document that was added later");
+
+// The corpus automatically recalculates TF-IDF scores
+console.log(corpus.getTopTermsForDocument("document4"));
+```
+
 For many more usage examples, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
 
 ### In the browser
 
-This library is designed for use as an ES6 module:
-
-```html
-<script type="module">
-  import { Corpus } from "./index.js";
-
-  const corpus = new Corpus(
-    ["doc1", "doc2"],
-    ["First document", "Second document"]
-  );
-  console.log(corpus.getTerms());
-</script>
-```
-
-For legacy browser support or simple script tag usage, UMD bundles are also available in the `dist/` folder (after running `npm run build`):
+For browser usage without a bundler, UMD bundles are available in the `dist/` folder (after running `npm run build`):
 
 ```html
 <script src="dist/tiny-tfidf.min.js"></script>
