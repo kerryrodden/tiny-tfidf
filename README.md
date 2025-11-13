@@ -30,41 +30,16 @@ console.log(corpus.getTopTermsForDocument("document3"));
 
 // result
 [
-  [ 'bit', 1.9939850399669656 ],
-  [ 'three', 1.3113595307890855 ],
-  [ 'different', 1.3113595307890855 ],
-  [ 'tiny', 1.3113595307890855 ],
-  [ 'longer', 1.3113595307890855 ],
-  [ 'number', 0.6556797653945428 ],
-  [ 'also', 0.6556797653945428 ],
-  [ 'test', 0.2721316901570901 ],
-  [ 'document', 0.2721316901570901 ]
+  [ 'bit', 1.9660174575882083 ],
+  [ 'three', 1.2872733353256125 ],
+  [ 'different', 1.2872733353256125 ],
+  [ 'tiny', 1.2872733353256125 ],
+  [ 'longer', 1.2872733353256125 ],
+  [ 'number', 0.6436366676628062 ],
+  [ 'also', 0.6436366676628062 ],
+  [ 'test', 0.2671333529909395 ],
+  [ 'document', 0.2671333529909395 ]
 ]
-```
-
-### With options (v1.0+)
-
-```js
-const corpus = new Corpus(
-  ["document1", "document2"],
-  ["First document text", "Second document text"],
-  {
-    useDefaultStopwords: true,
-    customStopwords: ['custom', 'words'],
-    K1: 2.0,
-    b: 0.75
-  }
-);
-```
-
-### Adding documents dynamically
-
-```js
-// Add a new document to an existing corpus
-corpus.addDocument("document4", "This is a new document that was added later");
-
-// The corpus automatically recalculates TF-IDF scores
-console.log(corpus.getTopTermsForDocument("document4"));
 ```
 
 For many more usage examples, see this [Observable notebook](https://observablehq.com/@kerryrodden/introduction-to-text-analysis-with-tf-idf).
@@ -99,7 +74,7 @@ new Corpus(names, texts, { useDefaultStopwords, customStopwords, K1, b })
 ```
 
 Other changes:
-- Tokenization now preserves alphanumeric terms like "2nd" (previously became "nd")
+- Tokenization now preserves alphanumeric terms like "2nd" (previously became "nd") plus the single-letter terms "I" and "a" (which are now stopwords)
 - Empty string documents are now handled gracefully
 - New method: `addDocument(identifier, text)` for dynamic corpus growth
 
