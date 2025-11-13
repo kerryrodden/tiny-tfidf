@@ -171,6 +171,41 @@ tape('Unit tests for empty string documents (Issue #5)', function (t) {
   t.ok(queryResults.length > 0, 'Queries should work with empty documents in corpus');
 });
 
+tape('Unit tests for addDocument() method (Issue #4)', function (t) {
+  t.plan(10);
+
+  // Create initial corpus with 2 documents
+  const corpus = new Corpus(['doc1', 'doc2'], ['This is a test', 'Another test document']);
+  const initialDocCount = corpus.getDocumentIdentifiers().length;
+  const initialTermCount = corpus.getTerms().length;
+
+  t.equal(initialDocCount, 2, 'Initial corpus should have 2 documents');
+
+  // Add a new document
+  const added = corpus.addDocument('doc3', 'A completely new document with unique terms');
+  t.ok(added, 'addDocument should return true when adding new document');
+  t.equal(corpus.getDocumentIdentifiers().length, 3, 'Corpus should now have 3 documents');
+
+  // Verify the new document is accessible
+  const newDoc = corpus.getDocument('doc3');
+  t.ok(newDoc, 'New document should be accessible');
+  t.ok(newDoc.getUniqueTerms().includes('unique'), 'New document should contain its terms');
+
+  // Verify corpus terms are recalculated
+  const newTerms = corpus.getTerms();
+  t.ok(newTerms.includes('unique'), 'Corpus terms should include terms from new document');
+  t.ok(newTerms.length > initialTermCount, 'Corpus should have more terms after adding document');
+
+  // Verify TF-IDF calculations work with the new document
+  const topTerms = corpus.getTopTermsForDocument('doc3');
+  t.ok(topTerms.length > 0, 'Should be able to get top terms for new document');
+
+  // Test that adding duplicate identifier returns false
+  const duplicate = corpus.addDocument('doc3', 'Different text');
+  t.notOk(duplicate, 'addDocument should return false for duplicate identifier');
+  t.equal(corpus.getDocumentIdentifiers().length, 3, 'Corpus should still have 3 documents');
+});
+
 tape('Unit tests for tokenization (Issue #3)', function (t) {
   t.plan(7);
 

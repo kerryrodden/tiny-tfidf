@@ -211,4 +211,22 @@ export default class Corpus {
   getStopwords() {
     return this._stopwords;
   }
+
+  // Adds a new document to the corpus dynamically. This is useful when the document repository
+  // grows over time. After adding the document, all cached calculations (collection frequencies,
+  // weights, and vectors) are invalidated and will be recalculated on next access.
+  // - identifier: unique identifier for the new document
+  // - text: the full text content of the document
+  // Returns true if the document was added, false if the identifier already exists
+  addDocument(identifier, text) {
+    if (this._documents.has(identifier)) {
+      return false;
+    }
+    this._documents.set(identifier, new Document(text));
+    // Invalidate cached calculations so they'll be recalculated with the new document
+    this._collectionFrequencies = null;
+    this._collectionFrequencyWeights = null;
+    this._documentVectors = null;
+    return true;
+  }
 }
