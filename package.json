@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --experimental-modules --es-module-specifier-resolution=node test.js"
+    "test": "node --experimental-modules --es-module-specifier-resolution=node test.js",
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,8 @@
   },
   "homepage": "https://github.com/kerryrodden/tiny-tfidf#readme",
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.53.2",
     "tape": "^4.11.0"
   }
 }
