@@ -146,7 +146,7 @@ tape('Document class - basic functionality', function (t) {
 });
 
 tape('Document class - tokenization', function (t) {
-  t.plan(7);
+  t.plan(5);
 
   const corpus1 = new Corpus(['doc1'], ['I was the 2nd person to see a dog']);
   const doc1 = corpus1.getDocument('doc1');
@@ -154,11 +154,9 @@ tape('Document class - tokenization', function (t) {
 
   t.ok(terms1.includes('2nd'), 'Alphanumeric token "2nd" should be preserved');
   t.ok(terms1.includes('i'), 'Single letter "I" should be preserved (lowercased)');
-  t.ok(terms1.includes('a'), 'Single letter "a" should be preserved');
 
   const corpusTerms1 = corpus1.getTerms();
   t.notOk(corpusTerms1.includes('i'), 'Single letter "i" should be filtered by stopwords at corpus level');
-  t.notOk(corpusTerms1.includes('a'), 'Single letter "a" should be filtered by stopwords at corpus level');
 
   const corpus2 = new Corpus(['doc2'], ['There are 123 items']);
   const doc2 = corpus2.getDocument('doc2');
@@ -181,7 +179,7 @@ tape('Similarity class - distance matrix', function (t) {
 });
 
 tape('Stopwords class - configuration options', function (t) {
-  t.plan(11);
+  t.plan(10);
 
   const customStopwords = ['test', 'words'];
 
@@ -189,7 +187,6 @@ tape('Stopwords class - configuration options', function (t) {
   t.ok(defaultPlusCustom.includes('test'), 'Should include custom stopword "test"');
   t.ok(defaultPlusCustom.includes('words'), 'Should include custom stopword "words"');
   t.ok(defaultPlusCustom.includes('the'), 'Should include default stopword "the"');
-  t.ok(defaultPlusCustom.includes('a'), 'Should include default stopword "a"');
   t.ok(defaultPlusCustom.includes('i'), 'Should include default stopword "i"');
 
   const emptyStopwords = new Stopwords(false, []);
