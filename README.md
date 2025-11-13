@@ -61,7 +61,21 @@ For many more usage examples, see this [Observable notebook](https://observableh
 
 ### In the browser
 
-For browser usage, UMD bundles are available in the `dist/` folder (after running `npm run build`):
+This library is designed for use as an ES6 module:
+
+```html
+<script type="module">
+  import { Corpus } from "./index.js";
+
+  const corpus = new Corpus(
+    ["doc1", "doc2"],
+    ["First document", "Second document"]
+  );
+  console.log(corpus.getTerms());
+</script>
+```
+
+For legacy browser support or simple script tag usage, UMD bundles are also available in the `dist/` folder (after running `npm run build`):
 
 ```html
 <script src="dist/tiny-tfidf.min.js"></script>
@@ -73,8 +87,6 @@ For browser usage, UMD bundles are available in the `dist/` folder (after runnin
   console.log(corpus.getTerms());
 </script>
 ```
-
-Or use with `importScripts()` in a Web Worker.
 
 ## Migration from v0.9 to v1.0
 
