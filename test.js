@@ -58,14 +58,14 @@ tape('Unit tests for Document class', function (t) {
   const doc = corpus.getDocument('document3');
 
   const terms = doc.getUniqueTerms();
-  // We have ignored short terms (<2 characters) and stripped numbers, and have not yet applied
-  // stopword filtering. So unique terms are ['test', 'document', 'number', 'three', 'is', 'bit',
-  // 'different', 'and', 'also', 'tiny', 'longer']
-  t.equal(terms.length, 11);
+  // We have ignored short terms (<2 characters except 'i' and 'a') and stripped pure numbers,
+  // and have not yet applied stopword filtering. So unique terms are ['test', 'document', 'number',
+  // 'three', 'is', 'a', 'bit', 'different', 'and', 'also', 'tiny', 'longer']
+  t.equal(terms.length, 12);
 
   t.equal(doc.getTermFrequency('bit'), 2);
   t.equal(doc.getTermFrequency('and'), 1); // stopwords are still present at the document level
-  t.equal(doc.getTermFrequency('a'), null); // too short
+  t.equal(doc.getTermFrequency('a'), 2); // 'a' is now preserved as a single-letter token
 });
 
 tape('Unit tests for Similarity class', function (t) {
@@ -79,13 +79,16 @@ tape('Unit tests for Similarity class', function (t) {
 });
 
 tape('Unit tests for Stopwords class', function (t) {
-  t.plan(9);
+  t.plan(11);
   const customStopwords = ['test', 'words'];
 
   const defaultPlusCustomStopwords = new Stopwords(true, customStopwords);
   t.ok(defaultPlusCustomStopwords.includes('test'));
   t.ok(defaultPlusCustomStopwords.includes('words'));
   t.ok(defaultPlusCustomStopwords.includes('the'));
+  // 'a' and 'i' should be in default stopwords
+  t.ok(defaultPlusCustomStopwords.includes('a'));
+  t.ok(defaultPlusCustomStopwords.includes('i'));
 
   const emptyStopwords = new Stopwords(false, []);
   t.notOk(emptyStopwords.includes('test'));
@@ -96,4 +99,33 @@ tape('Unit tests for Stopwords class', function (t) {
   t.ok(customStopwordsOnly.includes('test'));
   t.ok(customStopwordsOnly.includes('words'));
   t.notOk(customStopwordsOnly.includes('the'));
+});
+
+tape('Unit tests for tokenization (Issue #3)', function (t) {
+  t.plan(7);
+
+  // Test alphanumeric tokens like "2nd" are preserved
+  const corpus1 = new Corpus(['doc1'], ['I was the 2nd person to see a dog']);
+  const doc1 = corpus1.getDocument('doc1');
+  const terms1 = doc1.getUniqueTerms();
+  t.ok(terms1.includes('2nd'), '"2nd" should be preserved as a token');
+  t.ok(terms1.includes('i'), '"I" should be preserved (lowercased to "i")');
+  t.ok(terms1.includes('a'), '"a" should be preserved');
+
+  // Test that 'i' and 'a' are in default stopwords so they get filtered at corpus level
+  const corpusTerms1 = corpus1.getTerms();
+  t.notOk(corpusTerms1.includes('i'), '"i" should be filtered by stopwords');
+  t.notOk(corpusTerms1.includes('a'), '"a" should be filtered by stopwords');
+
+  // Test pure numeric tokens are filtered
+  const corpus2 = new Corpus(['doc2'], ['There are 123 items']);
+  const doc2 = corpus2.getDocument('doc2');
+  const terms2 = doc2.getUniqueTerms();
+  t.notOk(terms2.includes('123'), 'Pure numeric token "123" should be filtered');
+
+  // Test that single letters other than 'i' and 'a' are still filtered
+  const corpus3 = new Corpus(['doc3'], ["won't it's"]);
+  const doc3 = corpus3.getDocument('doc3');
+  const terms3 = doc3.getUniqueTerms();
+  t.notOk(terms3.includes('t') || terms3.includes('s'), 'Single letters from contractions should be filtered');
 });
